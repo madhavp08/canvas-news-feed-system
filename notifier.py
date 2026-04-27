@@ -10,6 +10,8 @@ import requests
 logger = logging.getLogger(__name__)
 
 SENDGRID_API_URL = "https://api.sendgrid.com/v3/mail/send"
+# https://docs.sendgrid.com/api-reference/mail-send/mail-send — max personalizations per request
+SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST = 1000
 
 
 class NotifyError(Exception):
@@ -61,6 +63,47 @@ def _escape_html(text: str) -> str:
     )
 
 
+def _post_sendgrid_mail(
+    api_key: str,
+    from_email: str,
+    subject: str,
+    plain: str,
+    html: str,
+    to_emails_batch: list[str],
+) -> int:
+    """POST one v3 mail/send payload. Each address gets its own personalization (private To)."""
+    personalizations = [
+        {"to": [{"email": e}], "subject": subject} for e in to_emails_batch
+    ]
+    payload = {
+        "personalizations": personalizations,
+        "from": {"email": from_email},
+        "content": [
+            {"type": "text/plain", "value": plain},
+            {"type": "text/html", "value": html},
+        ],
+    }
+    try:
+        resp = requests.post(
+            SENDGRID_API_URL,
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            timeout=30,
+        )
+    except requests.RequestException as exc:
+        raise NotifyError(f"SendGrid request failed: {exc}") from exc
+
+    if resp.status_code not in (200, 201, 202):
+        err_text = (resp.text or "")[:500]
+        raise NotifyError(
+            f"SendGrid returned HTTP {resp.status_code}: {err_text}"
+        )
+    return resp.status_code
+
+
 def send_notification(
     change_type: str,
     newest_entry: dict,
@@ -96,39 +139,18 @@ def send_notification(
     plain = _build_body(change_type, newest_entry)
     html = _build_html_body(change_type, newest_entry)
 
-    to_list = [{"email": e} for e in to_emails]
-    payload = {
-        "personalizations": [{
-            "to": to_list,
-            "subject": subject,
-        }],
-        "from": {"email": from_email},
-        "content": [
-            {"type": "text/plain", "value": plain},
-            {"type": "text/html", "value": html},
-        ],
-    }
-
-    try:
-        resp = requests.post(
-            SENDGRID_API_URL,
-            json=payload,
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            timeout=30,
-        )
-    except requests.RequestException as exc:
-        raise NotifyError(f"SendGrid request failed: {exc}") from exc
-
-    if resp.status_code not in (200, 201, 202):
-        err_text = (resp.text or "")[:500]
-        raise NotifyError(
-            f"SendGrid returned HTTP {resp.status_code}: {err_text}"
+    limit = SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST
+    batches = [to_emails[i : i + limit] for i in range(0, len(to_emails), limit)]
+    last_status: int | None = None
+    for batch in batches:
+        last_status = _post_sendgrid_mail(
+            api_key, from_email, subject, plain, html, batch
         )
 
     logger.info(
-        "Email sent to %d recipients (HTTP %d): %s",
-        len(to_emails), resp.status_code, subject,
+        "Email sent to %d recipient(s) in %d SendGrid request(s) (HTTP %s): %s",
+        len(to_emails),
+        len(batches),
+        last_status,
+        subject,
     )
