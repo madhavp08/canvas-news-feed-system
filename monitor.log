@@ -120,3 +120,85 @@ requests.exceptions.ConnectionError: HTTPSConnectionPool(host='umd.instructure.c
 2026-04-27 11:31:13 canvas_monitor INFO  Sleeping 3600 seconds until next check...
 2026-04-27 11:32:59 canvas_monitor INFO  Received signal 15, shutting down after current cycle...
 2026-04-27 11:32:59 canvas_monitor INFO  Poll loop stopped.
+2026-04-27 14:16:25 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 14:16:26 fetcher INFO  Fetched front page via API (72487 bytes, 245.0 ms)
+2026-04-27 14:16:26 parser INFO  Parsed 29 News Feed entries; newest date: 'Saturday, April 25' (2 items)
+2026-04-27 14:16:26 state_store INFO  Loaded state: last_change_type=INITIALIZED, latest_date='Saturday, April 25', checked_at=2026-04-26T19:06:02.023396-04:00
+2026-04-27 14:16:26 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Saturday, April 25",
+  "newest_items_count": 2,
+  "total_entries_parsed": 29
+}
+2026-04-27 14:16:26 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-04-27 15:30:38 canvas_monitor INFO  Starting poll loop: interval=3600s, url=https://umd.instructure.com/courses/1398395, browser=comet
+2026-04-27 15:30:38 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 15:30:38 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-04-27 15:30:38 fetcher INFO  Fetched front page via API (72487 bytes, 242.1 ms)
+2026-04-27 15:30:38 parser INFO  Parsed 29 News Feed entries; newest date: 'Saturday, April 25' (2 items)
+2026-04-27 15:30:38 state_store INFO  Loaded state: last_change_type=INITIALIZED, latest_date='Saturday, April 25', checked_at=2026-04-26T19:06:02.023396-04:00
+2026-04-27 15:30:38 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Saturday, April 25",
+  "newest_items_count": 2,
+  "total_entries_parsed": 29
+}
+2026-04-27 15:30:38 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-04-27 15:46:21 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 15:46:21 fetcher INFO  Fetched front page via API (72487 bytes, 527.1 ms)
+2026-04-27 15:46:21 parser INFO  Parsed 29 News Feed entries; newest date: 'Saturday, April 25' (2 items)
+2026-04-27 15:46:21 state_store INFO  Loaded state: last_change_type=INITIALIZED, latest_date='Saturday, April 25', checked_at=2026-04-26T19:06:02.023396-04:00
+2026-04-27 15:46:21 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Saturday, April 25",
+  "newest_items_count": 2,
+  "total_entries_parsed": 29
+}
+2026-04-27 15:46:21 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-04-27 17:15:29 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 17:15:30 fetcher INFO  Fetched front page via API (72487 bytes, 288.7 ms)
+2026-04-27 17:15:30 parser INFO  Parsed 29 News Feed entries; newest date: 'Saturday, April 25' (2 items)
+2026-04-27 17:15:30 state_store INFO  Loaded state: last_change_type=INITIALIZED, latest_date='Saturday, April 25', checked_at=2026-04-26T19:06:02.023396-04:00
+2026-04-27 17:15:30 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Saturday, April 25",
+  "newest_items_count": 2,
+  "total_entries_parsed": 29
+}
+2026-04-27 17:15:30 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-04-27 17:25:50 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 17:25:50 fetcher INFO  Fetched front page via API (72487 bytes, 376.7 ms)
+2026-04-27 17:25:50 parser INFO  Parsed 29 News Feed entries; newest date: 'Saturday, April 25' (2 items)
+2026-04-27 17:25:50 state_store INFO  Loaded state: last_change_type=INITIALIZED, latest_date='Saturday, April 25', checked_at=2026-04-26T19:06:02.023396-04:00
+2026-04-27 17:25:50 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Saturday, April 25",
+  "newest_items_count": 2,
+  "total_entries_parsed": 29
+}
+2026-04-27 17:25:50 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-04-27 18:15:30 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 18:15:30 fetcher INFO  Fetched front page via API (77181 bytes, 289.9 ms)
+2026-04-27 18:15:30 parser INFO  Parsed 30 News Feed entries; newest date: 'Monday, April 27' (5 items)
+2026-04-27 18:15:30 state_store INFO  Loaded state: last_change_type=INITIALIZED, latest_date='Saturday, April 25', checked_at=2026-04-26T19:06:02.023396-04:00
+2026-04-27 18:15:30 state_store INFO  Saved state: change_type=NEW_DATE, date='Monday, April 27', hash=6996394cb849…
+2026-04-27 18:15:31 notifier INFO  Email sent to 2 recipients (HTTP 202): CMSC216 News Feed update — Monday, April 27
+2026-04-27 18:15:31 canvas_monitor INFO  Notification sent for NEW_DATE
+2026-04-27 18:15:31 canvas_monitor INFO  Check result: {
+  "change_type": "NEW_DATE",
+  "newest_date": "Monday, April 27",
+  "newest_items_count": 5,
+  "total_entries_parsed": 30
+}
+2026-04-27 18:15:31 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-04-27 18:25:50 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-04-27 18:25:51 fetcher INFO  Fetched front page via API (77181 bytes, 394.9 ms)
+2026-04-27 18:25:51 parser INFO  Parsed 30 News Feed entries; newest date: 'Monday, April 27' (5 items)
+2026-04-27 18:25:51 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Monday, April 27', checked_at=2026-04-27T18:15:30.609296-04:00
+2026-04-27 18:25:51 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Monday, April 27",
+  "newest_items_count": 5,
+  "total_entries_parsed": 30
+}
+2026-04-27 18:25:51 canvas_monitor INFO  Sleeping 3600 seconds until next check...

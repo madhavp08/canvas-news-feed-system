@@ -49,7 +49,7 @@ def _build_html_body(change_type: str, newest_entry: dict) -> str:
     li_items = "\n".join(f"<li>{_escape_html(item)}</li>" for item in items)
     return (
         f"<p>{header}</p><ol>{li_items}</ol>"
-        f"<hr><p style='color:#888;font-size:12px;'>Sent by Canvas News Feed Monitor</p>"
+        f"<hr><p style='color:#888;font-size:12px;'>Sent by Madhav's Canvas News Feed Monitor</p>"
     )
 
 
