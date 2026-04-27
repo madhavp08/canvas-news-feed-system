@@ -25,6 +25,9 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 logger = logging.getLogger(__name__)
 
+# In-process cookie cache for long-running `poll` only (see `fetch_from_url(..., use_cookie_cache=True)`).
+_poll_cookie_cache: dict[tuple[str, str], dict[str, str]] = {}
+
 _COMET_COOKIE_DB = Path.home() / "Library/Application Support/Comet/Default/Cookies"
 _COMET_KEYCHAIN_SERVICE = "Comet Safe Storage"
 _COMET_KEYCHAIN_ACCOUNT = "Comet"
@@ -51,6 +54,10 @@ def fetch_from_file(file_path: str) -> str:
 
 class FetchError(Exception):
     """Raised when live page fetching fails."""
+
+
+class _AuthFailure(FetchError):
+    """Session/auth failure; `fetch_from_url` may retry once with refreshed cookies when caching."""
 
 
 def _extract_course_api_url(course_url: str) -> str:
@@ -235,17 +242,13 @@ def _load_browser_cookies(url: str, browser: str) -> dict[str, str]:
     return cookies
 
 
-def fetch_from_url(course_url: str, browser: str = "comet") -> str:
-    """Fetch the Canvas course front page HTML via the REST API.
-
-    Reads session cookies from the specified browser, calls the Canvas
-    front_page API endpoint, and returns the page body HTML.
-    """
-    api_url = _extract_course_api_url(course_url)
-
-    logger.info("Fetching front page from API: %s", api_url)
-    cookies = _load_browser_cookies(course_url, browser)
-
+def _fetch_front_page_with_cookies(
+    api_url: str,
+    course_url: str,
+    browser: str,
+    cookies: dict[str, str],
+) -> str:
+    """GET front_page JSON and return the `body` HTML. Raises _AuthFailure on session issues."""
     start = time.monotonic()
     resp = requests.get(
         api_url,
@@ -256,7 +259,7 @@ def fetch_from_url(course_url: str, browser: str = "comet") -> str:
     elapsed_ms = (time.monotonic() - start) * 1000
 
     if resp.status_code in (401, 403):
-        raise FetchError(
+        raise _AuthFailure(
             "Canvas returned 401/403 — your session cookies have likely expired. "
             f"Log into Canvas in {browser} and try again."
         )
@@ -267,7 +270,7 @@ def fetch_from_url(course_url: str, browser: str = "comet") -> str:
         )
 
     if "text/html" in resp.headers.get("Content-Type", ""):
-        raise FetchError(
+        raise _AuthFailure(
             "Canvas returned HTML instead of JSON — this usually means your "
             f"session has expired and Canvas is redirecting to the login page. "
             f"Log into Canvas in {browser} and try again."
@@ -294,3 +297,44 @@ def fetch_from_url(course_url: str, browser: str = "comet") -> str:
         elapsed_ms,
     )
     return body
+
+
+def fetch_from_url(
+    course_url: str,
+    browser: str = "comet",
+    *,
+    use_cookie_cache: bool = False,
+) -> str:
+    """Fetch the Canvas course front page HTML via the REST API.
+
+    Reads session cookies from the specified browser, calls the Canvas
+    front_page API endpoint, and returns the page body HTML.
+
+    When ``use_cookie_cache`` is True (used by ``poll`` mode), cookies are
+    loaded once per process and reused until a request indicates an expired
+    session; the cache is then invalidated and cookies are re-read from disk.
+    """
+    api_url = _extract_course_api_url(course_url)
+    cache_key = (course_url, browser.lower())
+
+    logger.info("Fetching front page from API: %s", api_url)
+
+    if use_cookie_cache and cache_key in _poll_cookie_cache:
+        cookies = _poll_cookie_cache[cache_key]
+    else:
+        cookies = _load_browser_cookies(course_url, browser)
+        if use_cookie_cache:
+            _poll_cookie_cache[cache_key] = cookies
+
+    for attempt in range(2):
+        try:
+            return _fetch_front_page_with_cookies(
+                api_url, course_url, browser, cookies
+            )
+        except _AuthFailure:
+            if use_cookie_cache and attempt == 0:
+                _poll_cookie_cache.pop(cache_key, None)
+                cookies = _load_browser_cookies(course_url, browser)
+                _poll_cookie_cache[cache_key] = cookies
+                continue
+            raise

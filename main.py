@@ -53,12 +53,16 @@ def check_once(
     url: str | None = None,
     browser: str = "comet",
     notify: bool = True,
+    *,
+    use_cookie_cache: bool = False,
 ) -> dict:
     """Run one fetch -> parse -> detect -> persist -> notify cycle."""
     if html_file:
         html = fetch_from_file(html_file)
     elif url:
-        html = fetch_from_url(url, browser=browser)
+        html = fetch_from_url(
+            url, browser=browser, use_cookie_cache=use_cookie_cache
+        )
     else:
         raise ValueError("Either --html-file or --url must be provided.")
 
@@ -119,6 +123,7 @@ def poll_loop(
                 url=url,
                 browser=browser,
                 notify=notify,
+                use_cookie_cache=True,
             )
         except (FetchError, ParseError) as exc:
             logger.error("Check failed (will retry next cycle): %s", exc)

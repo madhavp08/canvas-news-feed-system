@@ -108,7 +108,7 @@ def parse_news_feed(html: str) -> list[NewsEntry]:
     Returns entries in page order (newest first).
     Raises ParseError if the section cannot be found or contains no entries.
     """
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "lxml")
     heading = _find_news_feed_heading(soup)
     logger.debug("Found News Feed heading: <%s> at line %s", heading.name, heading.sourceline)
 
