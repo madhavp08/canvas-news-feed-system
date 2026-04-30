@@ -5,3 +5,6 @@ __pycache__/
 state.json
 .env
 216HomePage.html
+
+# Local-only command cheat sheet (not for the repo)
+terminal_commands.txt

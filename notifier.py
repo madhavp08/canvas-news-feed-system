@@ -2,16 +2,32 @@
 notifier.py — Email notification layer using the SendGrid Web API (HTTP, no extra crypto deps).
 """
 
+from __future__ import annotations
+
 import logging
 import os
 
 import requests
+from google import genai
+from google.genai import types as genai_types
 
 logger = logging.getLogger(__name__)
 
 SENDGRID_API_URL = "https://api.sendgrid.com/v3/mail/send"
 # https://docs.sendgrid.com/api-reference/mail-send/mail-send — max personalizations per request
 SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST = 1000
+
+# Bound Gemini input length (character budget for serialized announcement scan).
+_GEMINI_MAX_PAYLOAD_CHARS = 12_000
+_GEMINI_MAX_ITEM_CHARS = 2_000
+# Default fastest Flash-tier model for latency (override with GEMINI_MODEL).
+_DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-lite"
+_GEMINI_HTTP_TIMEOUT_MS = 20_000
+
+_GEMINI_SYSTEM_INSTRUCTION = """You summarize Canvas course news-feed announcements for busy students.
+Produce 2–4 short bullets or plain sentences—informal wording is OK; perfect grammar not required as long as it is clear.
+Stay concrete: deadlines, grading, policies, readings, labs, logistics. No fluff, no greetings.
+Summarize only what classmates need to act on or remember. Do NOT restate every line of the bulletin verbatim."""
 
 
 class NotifyError(Exception):
@@ -61,6 +77,90 @@ def _escape_html(text: str) -> str:
         .replace("<", "&lt;")
         .replace(">", "&gt;")
     )
+
+
+def _trim_text(text: str, max_chars: int) -> str:
+    if len(text) <= max_chars:
+        return text
+    return text[: max_chars - 1].rstrip() + "…"
+
+
+def _serialized_announcements_for_gemini(newest_entry: dict) -> str:
+    numbered = []
+    for i, item in enumerate(newest_entry["items"], 1):
+        trimmed = _trim_text(item, _GEMINI_MAX_ITEM_CHARS)
+        numbered.append(f"{i}. {trimmed}")
+
+    body = "\n".join(numbered)
+    if len(body) > _GEMINI_MAX_PAYLOAD_CHARS:
+        return _trim_text(body, _GEMINI_MAX_PAYLOAD_CHARS)
+    return body
+
+
+def _maybe_gemini_tldr(change_type: str, newest_entry: dict) -> str | None:
+    api_key = (os.environ.get("GEMINI_API_KEY") or "").strip()
+    if not api_key:
+        return None
+
+    model_id = (
+        (os.environ.get("GEMINI_MODEL") or "").strip() or _DEFAULT_GEMINI_MODEL
+    )
+
+    payload = _serialized_announcements_for_gemini(newest_entry)
+    user_block = (
+        f"Feed change classification: {change_type}\n"
+        f"Announcement date string: {newest_entry['date_raw']}\n"
+        "Bullet/lines extracted from this date's news-feed block follow.\n---\n"
+        f"{payload}"
+    )
+
+    try:
+        client = genai.Client(
+            api_key=api_key,
+            http_options=genai_types.HttpOptions(timeout=_GEMINI_HTTP_TIMEOUT_MS),
+        )
+        response = client.models.generate_content(
+            model=model_id,
+            contents=user_block,
+            config=genai_types.GenerateContentConfig(
+                system_instruction=_GEMINI_SYSTEM_INSTRUCTION,
+                max_output_tokens=256,
+                temperature=0.35,
+            ),
+        )
+    except Exception as exc:
+        logger.warning("Gemini TL;DR skipped: %s", exc)
+        return None
+
+    try:
+        raw = response.text
+    except ValueError:
+        logger.warning(
+            "Gemini TL;DR skipped: model returned empty or blocked text (finish reason)"
+        )
+        return None
+
+    text = raw.strip()
+
+    if not text:
+        logger.warning("Gemini TL;DR skipped: empty response text")
+        return None
+
+    return text
+
+
+def _prepend_tldr(plain_body: str, html_body: str, tldr: str) -> tuple[str, str]:
+    trimmed = tldr.strip()
+    if not trimmed:
+        return plain_body, html_body
+
+    plain_with = f"TL;DR:\n{trimmed}\n\n{plain_body}"
+    esc = _escape_html(trimmed).replace("\n", "<br>\n")
+    html_with = (
+        f"<p><strong>TL;DR:</strong><br>{esc}</p>"
+        f"{html_body}"
+    )
+    return plain_with, html_with
 
 
 def _post_sendgrid_mail(
@@ -114,7 +214,9 @@ def send_notification(
     """Send an email via SendGrid's HTTP API.
 
     Environment: SENDGRID_API_KEY, SENDGRID_FROM_EMAIL, NOTIFY_EMAILS
-    (comma-separated recipients).
+    (comma-separated recipients). Optionally GEMINI_API_KEY (see .env.example) and
+    GEMINI_MODEL prepend a Gemini TL;DR; if Gemini is unavailable, the email sends
+    without it.
     """
     api_key = api_key or os.environ.get("SENDGRID_API_KEY")
     from_email = from_email or os.environ.get("SENDGRID_FROM_EMAIL")
@@ -138,6 +240,10 @@ def send_notification(
     subject = _build_subject(change_type, newest_entry["date_raw"])
     plain = _build_body(change_type, newest_entry)
     html = _build_html_body(change_type, newest_entry)
+
+    tldr = _maybe_gemini_tldr(change_type, newest_entry)
+    if tldr:
+        plain, html = _prepend_tldr(plain, html, tldr)
 
     limit = SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST
     batches = [to_emails[i : i + limit] for i in range(0, len(to_emails), limit)]
