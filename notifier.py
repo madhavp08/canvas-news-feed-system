@@ -4,8 +4,14 @@ notifier.py — Email notification layer using the SendGrid Web API (HTTP, no ex
 
 from __future__ import annotations
 
+import json
 import logging
 import os
+import re
+import subprocess
+import sys
+from collections.abc import Callable
+from pathlib import Path
 
 import requests
 from google import genai
@@ -28,6 +34,225 @@ _GEMINI_SYSTEM_INSTRUCTION = """You summarize Canvas course news-feed announceme
 Produce 2–4 short bullets or plain sentences—informal wording is OK; perfect grammar not required as long as it is clear.
 Stay concrete: deadlines, grading, policies, readings, labs, logistics. No fluff, no greetings.
 Summarize only what classmates need to act on or remember. Do NOT restate every line of the bulletin verbatim."""
+
+# React Email CLI (see email-render/). Subprocess timeout in seconds.
+_REACT_EMAIL_RENDER_TIMEOUT = 25
+_PREVIEW_MAX_LEN = 140
+
+
+def normalize_tldr(raw: str | None) -> dict | None:
+    """Normalize Gemini (or other) TL;DR text for the React Email template.
+
+    Returns a JSON-serializable dict matching ``email-render`` types, or ``None``
+    when there is nothing to show.
+    """
+    if raw is None:
+        return None
+    text = raw.strip()
+    if not text:
+        return None
+
+    lines: list[str] = []
+    for ln in text.splitlines():
+        s = ln.strip()
+        if s:
+            lines.append(s)
+    if not lines:
+        return None
+
+    classified: list[tuple[str, str]] = []
+    for ln in lines:
+        stripped = _strip_bullet_prefix(ln)
+        if stripped is not None:
+            classified.append(("b", stripped))
+        else:
+            classified.append(("t", ln))
+
+    kinds = [k for k, _ in classified]
+    if not any(k == "b" for k in kinds):
+        return {"kind": "paragraph", "text": "\n".join(t for _, t in classified)}
+
+    if all(k == "b" for k in kinds):
+        return {
+            "kind": "bullets",
+            "lead": None,
+            "bullets": [t for _, t in classified],
+        }
+
+    if "b" in kinds:
+        idx_first_b = kinds.index("b")
+        head_ok = all(k == "t" for k in kinds[:idx_first_b])
+        tail_ok = all(k == "b" for k in kinds[idx_first_b:])
+        if head_ok and tail_ok:
+            lead_part = " ".join(t for k, t in classified[:idx_first_b]).strip()
+            bullets = [t for k, t in classified[idx_first_b:] if k == "b"]
+            return {
+                "kind": "bullets",
+                "lead": lead_part or None,
+                "bullets": bullets,
+            }
+
+    return {"kind": "paragraph", "text": "\n".join(lines)}
+
+
+def _strip_bullet_prefix(line: str) -> str | None:
+    """If ``line`` looks like a bullet/numbered list row, return the text after the marker."""
+    s = line.strip()
+    if not s:
+        return None
+    for prefix in ("- ", "* ", "• ", "– ", "— "):
+        if s.startswith(prefix):
+            inner = s[len(prefix) :].strip()
+            return inner if inner else None
+    m = re.match(r"^\d{1,3}[.)]\s+(.*)$", s)
+    if m:
+        inner = m.group(1).strip()
+        return inner if inner else None
+    return None
+
+
+def _preview_text(
+    subject: str,
+    date_raw: str,
+    tldr_norm: dict | None,
+    tldr_raw: str | None,
+) -> str:
+    if tldr_norm:
+        if tldr_norm.get("kind") == "paragraph":
+            t = str(tldr_norm.get("text", "")).replace("\n", " ").strip()
+            if t:
+                return (t[:_PREVIEW_MAX_LEN] + "…") if len(t) > _PREVIEW_MAX_LEN else t
+        elif tldr_norm.get("kind") == "bullets":
+            lead = tldr_norm.get("lead")
+            if lead and str(lead).strip():
+                t = str(lead).strip()
+                return (t[:_PREVIEW_MAX_LEN] + "…") if len(t) > _PREVIEW_MAX_LEN else t
+            bullets = tldr_norm.get("bullets") or []
+            if bullets:
+                t = str(bullets[0]).strip()
+                return (t[:_PREVIEW_MAX_LEN] + "…") if len(t) > _PREVIEW_MAX_LEN else t
+    if tldr_raw and tldr_raw.strip():
+        first = tldr_raw.strip().split("\n", 1)[0].strip()
+        if first:
+            return (
+                (first[:_PREVIEW_MAX_LEN] + "…")
+                if len(first) > _PREVIEW_MAX_LEN
+                else first
+            )
+    base = subject.strip() or f"CMSC216 News — {date_raw}"
+    return base[:_PREVIEW_MAX_LEN]
+
+
+def _tsx_executable(email_render_dir: Path) -> Path | None:
+    bin_dir = email_render_dir / "node_modules" / ".bin"
+    name = "tsx.cmd" if sys.platform == "win32" else "tsx"
+    p = bin_dir / name
+    return p if p.exists() else None
+
+
+def _render_news_email_html_subprocess(props: dict) -> str | None:
+    root = Path(__file__).resolve().parent
+    email_dir = root / "email-render"
+    tsx = _tsx_executable(email_dir)
+    if tsx is None:
+        logger.debug(
+            "React Email skipped: tsx not found under %s (run npm ci in email-render/)",
+            email_dir,
+        )
+        return None
+
+    cli = email_dir / "src" / "render-cli.tsx"
+    cmd = [str(tsx), str(cli)]
+    try:
+        proc = subprocess.run(
+            cmd,
+            input=json.dumps(props, ensure_ascii=False),
+            capture_output=True,
+            text=True,
+            timeout=_REACT_EMAIL_RENDER_TIMEOUT,
+            cwd=str(email_dir),
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        logger.warning(
+            "React Email render timed out after %ss; using legacy HTML",
+            _REACT_EMAIL_RENDER_TIMEOUT,
+        )
+        return None
+    except OSError as exc:
+        logger.warning("React Email render failed: %s; using legacy HTML", exc)
+        return None
+
+    if proc.returncode != 0:
+        err = (proc.stderr or proc.stdout or "")[:500]
+        logger.warning(
+            "React Email CLI exited %s: %s; using legacy HTML",
+            proc.returncode,
+            err,
+        )
+        return None
+
+    html = (proc.stdout or "").strip()
+    if not html:
+        logger.warning("React Email returned empty HTML; using legacy HTML")
+        return None
+    return html
+
+
+def _render_news_email_html(
+    props: dict,
+    render_html_fn: Callable[[dict], str | None] | None,
+) -> str | None:
+    if os.environ.get("SKIP_REACT_EMAIL_HTML", "").strip() == "1":
+        return None
+    if render_html_fn is not None:
+        try:
+            out = render_html_fn(props)
+            if out and out.strip():
+                return out.strip()
+            logger.warning(
+                "React Email injectable renderer returned empty output; using legacy HTML"
+            )
+            return None
+        except Exception as exc:  # noqa: BLE001 — boundary: custom renderer may raise
+            logger.warning(
+                "React Email injectable renderer failed: %s; using legacy HTML", exc
+            )
+            return None
+    return _render_news_email_html_subprocess(props)
+
+
+def _react_email_props(
+    change_type: str,
+    newest_entry: dict,
+    tldr_norm: dict | None,
+    preview_text: str,
+) -> dict:
+    template_ct = (
+        "NEW_DATE" if change_type == "NEW_DATE" else "UPDATED_SAME_DATE"
+    )
+    return {
+        "changeType": template_ct,
+        "dateRaw": newest_entry["date_raw"],
+        "items": list(newest_entry["items"]),
+        "tldr": tldr_norm,
+        "previewText": preview_text,
+    }
+
+
+def _prepend_tldr_plain(plain_body: str, tldr: str) -> str:
+    trimmed = tldr.strip()
+    if not trimmed:
+        return plain_body
+    return f"TL;DR:\n{trimmed}\n\n{plain_body}"
+
+
+def _prepend_tldr_html(html_body: str, tldr: str) -> str:
+    trimmed = tldr.strip()
+    if not trimmed:
+        return html_body
+    esc = _escape_html(trimmed).replace("\n", "<br>\n")
+    return f"<p><strong>TL;DR:</strong><br>{esc}</p>{html_body}"
 
 
 class NotifyError(Exception):
@@ -150,17 +375,10 @@ def _maybe_gemini_tldr(change_type: str, newest_entry: dict) -> str | None:
 
 
 def _prepend_tldr(plain_body: str, html_body: str, tldr: str) -> tuple[str, str]:
-    trimmed = tldr.strip()
-    if not trimmed:
-        return plain_body, html_body
-
-    plain_with = f"TL;DR:\n{trimmed}\n\n{plain_body}"
-    esc = _escape_html(trimmed).replace("\n", "<br>\n")
-    html_with = (
-        f"<p><strong>TL;DR:</strong><br>{esc}</p>"
-        f"{html_body}"
+    return (
+        _prepend_tldr_plain(plain_body, tldr),
+        _prepend_tldr_html(html_body, tldr),
     )
-    return plain_with, html_with
 
 
 def _post_sendgrid_mail(
@@ -210,6 +428,8 @@ def send_notification(
     api_key: str | None = None,
     from_email: str | None = None,
     to_emails: list[str] | None = None,
+    *,
+    render_html_fn: Callable[[dict], str | None] | None = None,
 ) -> None:
     """Send an email via SendGrid's HTTP API.
 
@@ -217,6 +437,10 @@ def send_notification(
     (comma-separated recipients). Optionally GEMINI_API_KEY (see .env.example) and
     GEMINI_MODEL prepend a Gemini TL;DR; if Gemini is unavailable, the email sends
     without it.
+
+    HTML body is rendered with React Email (``email-render/``) when the CLI is
+    available. Set ``SKIP_REACT_EMAIL_HTML=1`` to force legacy HTML, or pass
+    ``render_html_fn`` for tests / custom rendering.
     """
     api_key = api_key or os.environ.get("SENDGRID_API_KEY")
     from_email = from_email or os.environ.get("SENDGRID_FROM_EMAIL")
@@ -239,11 +463,20 @@ def send_notification(
 
     subject = _build_subject(change_type, newest_entry["date_raw"])
     plain = _build_body(change_type, newest_entry)
-    html = _build_html_body(change_type, newest_entry)
+    tldr_raw = _maybe_gemini_tldr(change_type, newest_entry)
+    if tldr_raw:
+        plain = _prepend_tldr_plain(plain, tldr_raw)
 
-    tldr = _maybe_gemini_tldr(change_type, newest_entry)
-    if tldr:
-        plain, html = _prepend_tldr(plain, html, tldr)
+    tldr_norm = normalize_tldr(tldr_raw)
+    preview = _preview_text(
+        subject, newest_entry["date_raw"], tldr_norm, tldr_raw
+    )
+    props = _react_email_props(change_type, newest_entry, tldr_norm, preview)
+    html = _render_news_email_html(props, render_html_fn)
+    if html is None:
+        html = _build_html_body(change_type, newest_entry)
+        if tldr_raw:
+            html = _prepend_tldr_html(html, tldr_raw)
 
     limit = SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST
     batches = [to_emails[i : i + limit] for i in range(0, len(to_emails), limit)]

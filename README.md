@@ -10,7 +10,8 @@ A personal monitoring tool that detects new or edited announcements in a Canvas/
 | `parser.py` | Extracts structured `NewsEntry` dicts from the News Feed section only |
 | `detector.py` | Pure function that classifies change: `INITIALIZED`, `NEW_DATE`, `UPDATED_SAME_DATE`, or `NO_CHANGE` |
 | `state_store.py` | Reads/writes `state.json` with atomic file operations |
-| `notifier.py` | Sends email notifications via the SendGrid HTTP API (`requests`) |
+| `notifier.py` | Sends email via SendGrid (`requests`); **HTML** is rendered with [React Email](https://react.email) in `email-render/` when Node deps are installed |
+| `email-render/` | Small Node + TypeScript package: React Email template + CLI that prints email-safe HTML to stdout (invoked by `notifier.py`) |
 | `main.py` | CLI with `check` (one-shot) and `poll` (continuous loop) modes |
 
 ## Setup
@@ -20,6 +21,14 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+**HTML rendering (recommended):** Polished multipart HTML is produced by React Email. Install Node 18+ once, then:
+
+```bash
+cd email-render && npm ci && cd ..
+```
+
+If `email-render/node_modules` is missing, or rendering fails/timeouts, `notifier.py` automatically falls back to the previous simple HTML builder (SendGrid delivery is unchanged). To force legacy HTML only, set `SKIP_REACT_EMAIL_HTML=1` in the environment.
 
 ## Configuration
 
@@ -49,6 +58,13 @@ python main.py check --html-file 216HomePage.html
 python main.py check --url https://umd.instructure.com/courses/1398395 --no-notify
 ```
 
+**Smoke-test notifications to yourself only** (overrides `NOTIFY_EMAILS` for that run; repeat `--notify-email` for multiple addresses). With `--no-notify`, no mail is sent and this flag is ignored.
+
+```bash
+python main.py check --url https://umd.instructure.com/courses/1398395 \
+  --notify-email you@example.com
+```
+
 ### Continuous polling
 
 ```bash
@@ -57,6 +73,9 @@ python main.py poll
 
 # Custom interval (in seconds)
 python main.py poll --url https://umd.instructure.com/courses/1398395 --interval 1800
+
+# Override recipients for every poll cycle (same semantics as `check --notify-email`)
+python main.py poll --url https://umd.instructure.com/courses/1398395 --notify-email you@example.com
 
 # Run in background
 nohup python main.py poll > monitor.log 2>&1 &

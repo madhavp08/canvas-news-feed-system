@@ -32,6 +32,25 @@ logger = logging.getLogger("canvas_monitor")
 _NOTIFY_CHANGE_TYPES = {"NEW_DATE", "UPDATED_SAME_DATE"}
 
 
+def _coerce_notify_email_override(raw: list[str] | None) -> list[str] | None:
+    """Validate ``--notify-email`` values: non-empty after strip, dedupe, preserve order.
+
+    Returns ``None`` when *raw* is ``None`` (flag not used). Raises ``ValueError``
+    when any entry is blank after stripping.
+    """
+    if raw is None:
+        return None
+    cleaned: list[str] = []
+    for i, addr in enumerate(raw):
+        s = addr.strip()
+        if not s:
+            raise ValueError(
+                f"--notify-email value #{i + 1} is empty or whitespace only"
+            )
+        cleaned.append(s)
+    return list(dict.fromkeys(cleaned))
+
+
 def _load_env_file(path: str = ".env") -> None:
     """Load key=value pairs from a .env file into os.environ.
     Skips blank lines, comments, and missing files."""
@@ -55,6 +74,7 @@ def check_once(
     notify: bool = True,
     *,
     use_cookie_cache: bool = False,
+    notify_emails: list[str] | None = None,
 ) -> dict:
     """Run one fetch -> parse -> detect -> persist -> notify cycle."""
     if html_file:
@@ -77,7 +97,7 @@ def check_once(
 
     if notify and change_type in _NOTIFY_CHANGE_TYPES:
         try:
-            send_notification(change_type, newest)
+            send_notification(change_type, newest, to_emails=notify_emails)
             logger.info("Notification sent for %s", change_type)
         except NotifyError as exc:
             logger.error("Failed to send notification: %s", exc)
@@ -99,6 +119,8 @@ def poll_loop(
     browser: str,
     interval: int,
     notify: bool,
+    *,
+    notify_emails: list[str] | None = None,
 ) -> None:
     """Run check_once repeatedly with a sleep interval. Resilient to transient errors."""
     logger.info(
@@ -124,6 +146,7 @@ def poll_loop(
                 browser=browser,
                 notify=notify,
                 use_cookie_cache=True,
+                notify_emails=notify_emails,
             )
         except (FetchError, ParseError) as exc:
             logger.error("Check failed (will retry next cycle): %s", exc)
@@ -166,6 +189,15 @@ def main() -> None:
     check_p.add_argument("--state-file", default="state.json")
     check_p.add_argument("--no-notify", action="store_true",
                          help="Skip email notification even on change.")
+    check_p.add_argument(
+        "--notify-email",
+        action="append",
+        dest="notify_emails",
+        metavar="EMAIL",
+        default=None,
+        help="Override NOTIFY_EMAILS for this run only; repeat per address. "
+        "Ignored when --no-notify is set (no mail is sent).",
+    )
     check_p.add_argument("-v", "--verbose", action="store_true")
 
     # --- poll subcommand ---
@@ -178,6 +210,15 @@ def main() -> None:
                         default=int(os.environ.get("POLL_INTERVAL", "3600")),
                         help="Seconds between checks (default: 3600).")
     poll_p.add_argument("--no-notify", action="store_true")
+    poll_p.add_argument(
+        "--notify-email",
+        action="append",
+        dest="notify_emails",
+        metavar="EMAIL",
+        default=None,
+        help="Override NOTIFY_EMAILS for this run only; repeat per address. "
+        "Ignored when --no-notify is set (no mail is sent).",
+    )
     poll_p.add_argument("-v", "--verbose", action="store_true")
 
     args = ap.parse_args()
@@ -194,12 +235,20 @@ def main() -> None:
 
     if args.command == "check":
         try:
+            try:
+                notify_override = _coerce_notify_email_override(
+                    args.notify_emails
+                )
+            except ValueError as exc:
+                logger.error("%s", exc)
+                sys.exit(2)
             summary = check_once(
                 state_file=args.state_file,
                 html_file=args.html_file,
                 url=args.url,
                 browser=args.browser,
                 notify=not args.no_notify,
+                notify_emails=notify_override,
             )
         except Exception:
             logger.exception("Monitor check failed")
@@ -212,12 +261,18 @@ def main() -> None:
                 "No URL provided. Use --url or set CANVAS_COURSE_URL in .env"
             )
             sys.exit(1)
+        try:
+            notify_override = _coerce_notify_email_override(args.notify_emails)
+        except ValueError as exc:
+            logger.error("%s", exc)
+            sys.exit(2)
         poll_loop(
             url=args.url,
             state_file=args.state_file,
             browser=args.browser,
             interval=args.interval,
             notify=not args.no_notify,
+            notify_emails=notify_override,
         )
 
 
