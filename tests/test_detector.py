@@ -1,24 +1,33 @@
 """Tests for detector.py — change classification logic."""
 
 from detector import detect_change
+from parser import canonical_line_plain
+
+
+def _line(text: str) -> list[list[dict]]:
+    return [[{"type": "text", "text": text}]]
 
 
 def _make_entry(date_normalized: str = "saturday, april 25", content_hash: str = "abc123"):
+    items = _line("item 1")
+    ct = canonical_line_plain(items[0])
     return {
         "date_raw": date_normalized.title(),
         "date_normalized": date_normalized,
-        "items": ["item 1"],
-        "content_text": "item 1",
+        "items": items,
+        "content_text": ct,
         "content_hash": content_hash,
     }
 
 
 def _make_state(date_normalized: str = "saturday, april 25", content_hash: str = "abc123"):
+    items = _line("item 1")
+    ct = canonical_line_plain(items[0])
     return {
         "latest_date_raw": date_normalized.title(),
         "latest_date_normalized": date_normalized,
-        "latest_items": ["item 1"],
-        "latest_content_text": "item 1",
+        "latest_items": items,
+        "latest_content_text": ct,
         "latest_content_hash": content_hash,
         "last_checked_at": "2026-04-26T12:00:00-04:00",
         "last_change_type": "NEW_DATE",

@@ -4,7 +4,7 @@ import hashlib
 
 import pytest
 
-from parser import ParseError, normalize_text, parse_news_feed
+from parser import ParseError, canonical_line_plain, normalize_text, parse_news_feed
 
 # ---------------------------------------------------------------------------
 # Representative HTML that mimics the real Canvas course page structure:
@@ -15,6 +15,7 @@ from parser import ParseError, normalize_text, parse_news_feed
 
 SAMPLE_HTML = """\
 <html>
+<head><base href="https://umd.instructure.com/"/></head>
 <body>
 <div id="course-homepage">
 
@@ -125,23 +126,42 @@ class TestParseNewsFeed:
         assert len(entries[0]["items"]) == 2
         assert len(entries[1]["items"]) == 3
 
-    def test_strips_html_tags(self):
+    def test_resolves_canvas_relative_anchor_with_base_tag(self):
         entries = parse_news_feed(SAMPLE_HTML)
-        first_item = entries[0]["items"][0]
-        assert "<b>" not in first_item
-        assert "<a " not in first_item
+        bullets = entries[0]["items"][1]
+        links = [s for s in bullets if s["type"] == "link"]
+        assert len(links) == 1
+        assert links[0]["href"] == "https://umd.instructure.com/projects/9"
+        assert "project requirements" in links[0]["label"].lower()
 
-    def test_normalizes_whitespace_in_items(self):
+    def test_external_https_anchor_becomes_link(self):
+        entries = parse_news_feed(SAMPLE_HTML)
+        bullets = entries[1]["items"][1]
+        links = [s for s in bullets if s["type"] == "link"]
+        assert len(links) == 1
+        assert links[0]["href"].startswith("https://example.com")
+        assert "career fair" in links[0]["label"].lower()
+
+    def test_no_raw_tags_in_segments(self):
+        entries = parse_news_feed(SAMPLE_HTML)
+        flat = repr(entries[0]["items"])
+        assert "<b>" not in flat
+        assert "<a " not in flat
+
+    def test_normalizes_whitespace_in_plaintext_lines(self):
         entries = parse_news_feed(SAMPLE_HTML)
         for entry in entries:
-            for item in entry["items"]:
-                assert "  " not in item
-                assert item == item.strip()
+            for line in entry["items"]:
+                plain = canonical_line_plain(line)
+                assert plain == plain.strip()
 
-    def test_content_text_joins_items(self):
+    def test_content_text_equals_canonical_join_of_lines(self):
         entries = parse_news_feed(SAMPLE_HTML)
-        first = entries[0]
-        assert first["content_text"] == "\n".join(first["items"])
+        for entry in entries:
+            expected = "\n".join(
+                canonical_line_plain(line) for line in entry["items"]
+            )
+            assert entry["content_text"] == expected
 
     def test_content_hash_is_sha256(self):
         entries = parse_news_feed(SAMPLE_HTML)
@@ -168,7 +188,9 @@ class TestParseNewsFeed:
         entries = parse_news_feed(MINIMAL_HTML)
         assert len(entries) == 1
         assert entries[0]["date_raw"] == "Monday, April 21"
-        assert entries[0]["items"] == ["Single announcement item."]
+        assert entries[0]["items"] == [
+            [{"type": "text", "text": "Single announcement item."}]
+        ]
 
     def test_case_insensitive_heading_match(self):
         """'News Feed' with capital F should still be found."""

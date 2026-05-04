@@ -4,10 +4,15 @@ export type TldrNormalized =
   | { kind: "paragraph"; text: string }
   | { kind: "bullets"; lead: string | null; bullets: string[] };
 
+export type ItemSegment =
+  | { type: "text"; text: string }
+  | { type: "link"; href: string; label: string };
+
 export type NewsFeedEmailProps = {
   changeType: NotifyChangeType;
   dateRaw: string;
-  items: string[];
+  /** One array of segments per bulletin line */
+  items: ItemSegment[][];
   tldr: TldrNormalized | null;
   previewText: string;
 };

@@ -12,8 +12,10 @@ import subprocess
 import sys
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import requests
+from parser import ItemSegment, canonical_line_plain
 from google import genai
 from google.genai import types as genai_types
 
@@ -222,6 +224,50 @@ def _render_news_email_html(
     return _render_news_email_html_subprocess(props)
 
 
+def _normalize_entry_items(raw: object) -> list[list[ItemSegment]]:
+    """Convert legacy flat string lines into single text segments."""
+    if not raw:
+        return []
+    if not isinstance(raw, list):
+        raise TypeError("newest_entry['items'] must be a list")
+    first_row = raw[0]
+    if isinstance(first_row, str):
+        return [[{"type": "text", "text": str(line)}] for line in raw]
+    if isinstance(first_row, list):
+        return raw  # type: ignore[return-value]
+    raise TypeError(
+        "newest_entry['items'] must be list[str] or list[list] of segments"
+    )
+
+
+def _segments_to_li_inner_html(segments: list[dict[str, Any]]) -> str:
+    parts: list[str] = []
+    for s in segments:
+        typ = str(s.get("type", ""))
+        if typ == "link":
+            href = str(s.get("href") or "")
+            lab = str(s.get("label") or "")
+            if _legacy_link_href_ok(href):
+                parts.append(
+                    f'<a href="{_escape_href_attr(href)}">{_escape_html(lab)}</a>'
+                )
+            else:
+                parts.append(_escape_html(lab))
+        else:
+            parts.append(_escape_html(str(s.get("text", ""))))
+    return "".join(parts)
+
+
+def _legacy_link_href_ok(href: str) -> bool:
+    lc = href.strip().lower()
+    return lc.startswith("https://") or lc.startswith("http://")
+
+
+def _escape_href_attr(href: str) -> str:
+    # Avoid injecting attribute breaks; URIs rarely need more than quotes and &.
+    return href.replace("&", "&amp;").replace('"', "&quot;")
+
+
 def _react_email_props(
     change_type: str,
     newest_entry: dict,
@@ -231,10 +277,11 @@ def _react_email_props(
     template_ct = (
         "NEW_DATE" if change_type == "NEW_DATE" else "UPDATED_SAME_DATE"
     )
+    normalized = _normalize_entry_items(newest_entry["items"])
     return {
         "changeType": template_ct,
         "dateRaw": newest_entry["date_raw"],
-        "items": list(newest_entry["items"]),
+        "items": normalized,
         "tldr": tldr_norm,
         "previewText": preview_text,
     }
@@ -269,27 +316,30 @@ def _build_subject(change_type: str, newest_date: str) -> str:
 
 def _build_body(change_type: str, newest_entry: dict) -> str:
     date = newest_entry["date_raw"]
-    items = newest_entry["items"]
+    items = _normalize_entry_items(newest_entry["items"])
 
     if change_type == "NEW_DATE":
         header = f"New announcement posted for {date}:"
     else:
         header = f"The announcement for {date} was edited. Current content:"
 
-    bullet_list = "\n".join(f"  {i+1}. {item}" for i, item in enumerate(items))
+    bullet_list = "\n".join(
+        f"  {i + 1}. {canonical_line_plain(line)}"
+        for i, line in enumerate(items)
+    )
     return f"{header}\n\n{bullet_list}\n"
 
 
 def _build_html_body(change_type: str, newest_entry: dict) -> str:
     date = newest_entry["date_raw"]
-    items = newest_entry["items"]
+    items = _normalize_entry_items(newest_entry["items"])
 
     if change_type == "NEW_DATE":
         header = f"New announcement posted for <strong>{date}</strong>:"
     else:
         header = f"The announcement for <strong>{date}</strong> was edited. Current content:"
 
-    li_items = "\n".join(f"<li>{_escape_html(item)}</li>" for item in items)
+    li_items = "\n".join(f"<li>{_segments_to_li_inner_html(line)}</li>" for line in items)
     return (
         f"<p>{header}</p><ol>{li_items}</ol>"
         f"<hr><p style='color:#888;font-size:12px;'>Sent by Madhav's Canvas News Feed Monitor</p>"
@@ -311,9 +361,11 @@ def _trim_text(text: str, max_chars: int) -> str:
 
 
 def _serialized_announcements_for_gemini(newest_entry: dict) -> str:
+    items = _normalize_entry_items(newest_entry["items"])
     numbered = []
-    for i, item in enumerate(newest_entry["items"], 1):
-        trimmed = _trim_text(item, _GEMINI_MAX_ITEM_CHARS)
+    for i, line in enumerate(items, 1):
+        plain_line = canonical_line_plain(line)
+        trimmed = _trim_text(plain_line, _GEMINI_MAX_ITEM_CHARS)
         numbered.append(f"{i}. {trimmed}")
 
     body = "\n".join(numbered)
@@ -462,7 +514,10 @@ def send_notification(
         )
 
     subject = _build_subject(change_type, newest_entry["date_raw"])
-    plain = _build_body(change_type, newest_entry)
+    send_entry = dict(newest_entry)
+    send_entry["items"] = _normalize_entry_items(send_entry["items"])
+
+    plain = _build_body(change_type, send_entry)
     tldr_raw = _maybe_gemini_tldr(change_type, newest_entry)
     if tldr_raw:
         plain = _prepend_tldr_plain(plain, tldr_raw)
@@ -471,10 +526,10 @@ def send_notification(
     preview = _preview_text(
         subject, newest_entry["date_raw"], tldr_norm, tldr_raw
     )
-    props = _react_email_props(change_type, newest_entry, tldr_norm, preview)
+    props = _react_email_props(change_type, send_entry, tldr_norm, preview)
     html = _render_news_email_html(props, render_html_fn)
     if html is None:
-        html = _build_html_body(change_type, newest_entry)
+        html = _build_html_body(change_type, send_entry)
         if tldr_raw:
             html = _prepend_tldr_html(html, tldr_raw)
 

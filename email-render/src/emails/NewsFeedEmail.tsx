@@ -4,17 +4,47 @@ import {
   Head,
   Hr,
   Html,
+  Link,
   Preview,
   Text,
 } from "@react-email/components";
+import { Fragment } from "react";
 import { EmailSummaryCard } from "./EmailSummaryCard";
-import type { NewsFeedEmailProps } from "./types";
+import type { NewsFeedEmailProps, ItemSegment } from "./types";
 
-function escapeText(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+function BulletLine(props: { index: number; segments: ItemSegment[] }) {
+  const { index, segments } = props;
+
+  const body = segments.map((s, si) =>
+    s.type === "text" ? (
+      <Fragment key={`t-${si}`}>{s.text}</Fragment>
+    ) : (
+      <Link
+        key={`l-${si}`}
+        href={s.href}
+        style={{
+          color: "#0b57d0",
+          textDecoration: "underline",
+        }}
+      >
+        {s.label}
+      </Link>
+    ),
+  );
+
+  return (
+    <Text
+      style={{
+        fontSize: "14px",
+        lineHeight: "21px",
+        margin: "0 0 8px",
+        color: "#2b303a",
+        paddingLeft: "4px",
+      }}
+    >
+      {index + 1}. {body}
+    </Text>
+  );
 }
 
 export function NewsFeedEmail({
@@ -54,19 +84,8 @@ export function NewsFeedEmail({
           >
             {header}
           </Text>
-          {items.map((item, i) => (
-            <Text
-              key={i}
-              style={{
-                fontSize: "14px",
-                lineHeight: "21px",
-                margin: "0 0 8px",
-                color: "#2b303a",
-                paddingLeft: "4px",
-              }}
-            >
-              {i + 1}. {escapeText(item)}
-            </Text>
+          {items.map((segments, i) => (
+            <BulletLine key={i} index={i} segments={segments} />
           ))}
           <Hr style={{ borderColor: "#e5e7eb", margin: "28px 0 16px" }} />
           <Text style={{ color: "#888888", fontSize: "12px", margin: 0 }}>

@@ -13,7 +13,7 @@ from notifier import NotifyError
 _ENTRY = {
     "date_raw": "Sunday, April 26",
     "date_normalized": "sunday, april 26",
-    "items": ["Announcement A"],
+    "items": [[{"type": "text", "text": "Announcement A"}]],
     "content_text": "Announcement A",
     "content_hash": "hash1",
 }

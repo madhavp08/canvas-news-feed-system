@@ -232,3 +232,14 @@ requests.exceptions.ConnectionError: HTTPSConnectionPool(host='umd.instructure.c
   "total_entries_parsed": 32
 }
 2026-05-03 19:57:59 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-05-03 22:10:50 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-03 22:10:50 fetcher INFO  Fetched front page via API (83558 bytes, 277.8 ms)
+2026-05-03 22:10:50 parser INFO  Parsed 33 News Feed entries; newest date: 'Sunday, May 3' (3 items)
+2026-05-03 22:10:50 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Sunday, May 3', checked_at=2026-05-03T21:56:52.619988-04:00
+2026-05-03 22:10:50 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Sunday, May 3",
+  "newest_items_count": 3,
+  "total_entries_parsed": 33
+}
+2026-05-03 22:10:50 canvas_monitor INFO  Sleeping 3600 seconds until next check...
