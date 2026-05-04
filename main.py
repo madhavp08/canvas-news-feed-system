@@ -2,8 +2,9 @@
 main.py — CLI entry point for the Canvas News Feed monitor.
 
 Modes:
-    check   Run one check cycle (default).
-    poll    Run continuously, checking every --interval seconds.
+    check            Run one check cycle (default).
+    poll             Run continuously, checking every --interval seconds.
+    send-from-state  Send one email from persisted state (manual resend).
 
 Usage:
     python main.py check --url https://umd.instructure.com/courses/1398395
@@ -30,6 +31,71 @@ from state_store import load_state, save_state
 logger = logging.getLogger("canvas_monitor")
 
 _NOTIFY_CHANGE_TYPES = {"NEW_DATE", "UPDATED_SAME_DATE"}
+
+_STATE_ENTRY_KEYS = (
+    "latest_date_raw",
+    "latest_date_normalized",
+    "latest_items",
+    "latest_content_text",
+    "latest_content_hash",
+)
+
+
+def _newest_entry_from_saved_state(state: dict) -> dict:
+    """Map ``state.json`` fields to the newest-entry dict ``send_notification`` expects."""
+    missing = [k for k in _STATE_ENTRY_KEYS if k not in state]
+    if missing:
+        raise ValueError(
+            f"State file is missing required field(s): {', '.join(missing)}."
+        )
+
+    return {
+        "date_raw": state["latest_date_raw"],
+        "date_normalized": state["latest_date_normalized"],
+        "items": state["latest_items"],
+        "content_text": state["latest_content_text"],
+        "content_hash": state["latest_content_hash"],
+    }
+
+
+def notify_from_saved_state(
+    state_file: str,
+    change_type_override: str | None = None,
+    *,
+    notify_emails: list[str] | None = None,
+) -> str:
+    """Load ``state_file``, rebuild the newest entry, send one notification.
+
+    Returns the change_type used.
+
+    Raises:
+        ``ValueError`` if state is missing, incomplete, or has no usable
+        ``last_change_type`` when *change_type_override* is omitted.
+    """
+    p = Path(state_file)
+    if not p.exists():
+        raise ValueError(f"State file not found: {state_file}")
+
+    state = load_state(state_file)
+    if state is None:
+        raise ValueError(f"No state loaded from {state_file!r}")
+
+    entry = _newest_entry_from_saved_state(state)
+
+    if change_type_override is not None:
+        ct = change_type_override
+    else:
+        ct = state.get("last_change_type")
+
+    if ct not in _NOTIFY_CHANGE_TYPES:
+        raise ValueError(
+            "State file provides no usable last_change_type for email "
+            f"({ct!r}). Use --change-type NEW_DATE or UPDATED_SAME_DATE."
+        )
+
+    send_notification(ct, entry, to_emails=notify_emails)
+    logger.info("Manual send-from-state succeeded for change_type=%s", ct)
+    return ct
 
 
 def _coerce_notify_email_override(raw: list[str] | None) -> list[str] | None:
@@ -168,7 +234,12 @@ def poll_loop(
 def main() -> None:
     # Allow legacy invocations: `python main.py --url ...` without the `check` subcommand
     if len(sys.argv) > 1 and sys.argv[1] not in (
-        "check", "poll", "help", "-h", "--help"
+        "check",
+        "poll",
+        "send-from-state",
+        "help",
+        "-h",
+        "--help",
     ):
         sys.argv.insert(1, "check")
 
@@ -221,6 +292,31 @@ def main() -> None:
     )
     poll_p.add_argument("-v", "--verbose", action="store_true")
 
+    send_p = sub.add_parser(
+        "send-from-state",
+        help=(
+            "Send one notification from persisted state (same pipeline as poll/check)."
+        ),
+    )
+    send_p.add_argument("--state-file", default="state.json")
+    send_p.add_argument(
+        "--change-type",
+        choices=sorted(_NOTIFY_CHANGE_TYPES),
+        default=None,
+        help=(
+            "Defaults to last_change_type in state when NEW_DATE or UPDATED_SAME_DATE."
+        ),
+    )
+    send_p.add_argument(
+        "--notify-email",
+        action="append",
+        dest="notify_emails",
+        metavar="EMAIL",
+        default=None,
+        help="Override NOTIFY_EMAILS for this send only; repeat per address.",
+    )
+    send_p.add_argument("-v", "--verbose", action="store_true")
+
     args = ap.parse_args()
 
     if args.command is None:
@@ -250,6 +346,9 @@ def main() -> None:
                 notify=not args.no_notify,
                 notify_emails=notify_override,
             )
+        except FetchError as exc:
+            logger.error("Monitor check failed: %s", exc)
+            sys.exit(1)
         except Exception:
             logger.exception("Monitor check failed")
             sys.exit(1)
@@ -274,6 +373,26 @@ def main() -> None:
             notify=not args.no_notify,
             notify_emails=notify_override,
         )
+
+    elif args.command == "send-from-state":
+        try:
+            notify_override = _coerce_notify_email_override(args.notify_emails)
+        except ValueError as exc:
+            logger.error("%s", exc)
+            sys.exit(2)
+        try:
+            ct = notify_from_saved_state(
+                args.state_file,
+                change_type_override=args.change_type,
+                notify_emails=notify_override,
+            )
+        except NotifyError as exc:
+            logger.error("Notification failed: %s", exc)
+            sys.exit(1)
+        except ValueError as exc:
+            logger.error("%s", exc)
+            sys.exit(2)
+        print(json.dumps({"change_type": ct, "state_file": args.state_file}, indent=2))
 
 
 if __name__ == "__main__":

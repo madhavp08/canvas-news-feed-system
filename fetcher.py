@@ -25,6 +25,11 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 logger = logging.getLogger(__name__)
 
+# Retries for API GET when DNS/connectivity blips (single poll cycle; hourly loop unchanged).
+_FETCH_TRANSIENT_ATTEMPTS = 5
+_FETCH_BACKOFF_INITIAL_S = 1.0
+_FETCH_BACKOFF_MAX_S = 30.0
+
 # In-process cookie cache for long-running `poll` only (see `fetch_from_url(..., use_cookie_cache=True)`).
 _poll_cookie_cache: dict[tuple[str, str], dict[str, str]] = {}
 
@@ -249,14 +254,47 @@ def _fetch_front_page_with_cookies(
     cookies: dict[str, str],
 ) -> str:
     """GET front_page JSON and return the `body` HTML. Raises _AuthFailure on session issues."""
-    start = time.monotonic()
-    resp = requests.get(
-        api_url,
-        cookies=cookies,
-        headers={"Accept": "application/json"},
-        timeout=30,
-    )
-    elapsed_ms = (time.monotonic() - start) * 1000
+    resp = None
+    for transient_try in range(_FETCH_TRANSIENT_ATTEMPTS):
+        start = time.monotonic()
+        try:
+            resp = requests.get(
+                api_url,
+                cookies=cookies,
+                headers={"Accept": "application/json"},
+                timeout=30,
+            )
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exc:
+            n = transient_try + 1
+            if n < _FETCH_TRANSIENT_ATTEMPTS:
+                delay = min(
+                    _FETCH_BACKOFF_INITIAL_S * (2**transient_try),
+                    _FETCH_BACKOFF_MAX_S,
+                )
+                logger.warning(
+                    "API GET failed (attempt %d/%d, transient %s): %s; retrying in %.1fs",
+                    n,
+                    _FETCH_TRANSIENT_ATTEMPTS,
+                    type(exc).__name__,
+                    exc,
+                    delay,
+                )
+                time.sleep(delay)
+                continue
+            logger.error(
+                "API GET failed after %d attempts: %s",
+                _FETCH_TRANSIENT_ATTEMPTS,
+                exc,
+                exc_info=True,
+            )
+            raise FetchError(
+                f"Network error after {_FETCH_TRANSIENT_ATTEMPTS} attempts "
+                f"(DNS/connectivity). Last error: {exc}"
+            ) from exc
+        elapsed_ms = (time.monotonic() - start) * 1000
+        break
+
+    assert resp is not None
 
     if resp.status_code in (401, 403):
         raise _AuthFailure(

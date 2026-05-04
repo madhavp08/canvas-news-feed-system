@@ -1,5 +1,6 @@
 """Tests for main.py — CLI notification overrides (hermetic, no network)."""
 
+import json
 import sys
 from unittest.mock import patch
 
@@ -7,6 +8,7 @@ import pytest
 
 import main
 from main import _coerce_notify_email_override, check_once
+from notifier import NotifyError
 
 _ENTRY = {
     "date_raw": "Sunday, April 26",
@@ -148,3 +150,107 @@ def test_main_check_invalid_notify_email_exits(_load):
         with pytest.raises(SystemExit) as exc_info:
             main.main()
     assert exc_info.value.code == 2
+
+
+_STATE_SEND = {
+    "latest_date_raw": "Monday, April 27",
+    "latest_date_normalized": "monday, april 27",
+    "latest_items": ["Announcement"],
+    "latest_content_text": "Announcement",
+    "latest_content_hash": "abc",
+    "last_change_type": "NEW_DATE",
+}
+
+
+@patch("main.send_notification")
+@patch("main._load_env_file")
+def test_main_send_from_state_uses_saved_change_type(mock_env, mock_send, tmp_path):
+    sf = tmp_path / "state.json"
+    sf.write_text(json.dumps(_STATE_SEND), encoding="utf-8")
+    with patch.object(
+        sys,
+        "argv",
+        ["main", "send-from-state", "--state-file", str(sf)],
+    ):
+        main.main()
+    mock_send.assert_called_once()
+    assert mock_send.call_args.args[0] == "NEW_DATE"
+    entry = mock_send.call_args.args[1]
+    assert entry["date_raw"] == "Monday, April 27"
+    assert entry["content_hash"] == "abc"
+
+
+@patch("main.send_notification")
+@patch("main._load_env_file")
+def test_main_send_from_state_notify_email_override(mock_env, mock_send, tmp_path):
+    sf = tmp_path / "state.json"
+    sf.write_text(json.dumps(_STATE_SEND), encoding="utf-8")
+    with patch.object(
+        sys,
+        "argv",
+        [
+            "main",
+            "send-from-state",
+            "--state-file",
+            str(sf),
+            "--notify-email",
+            "only@example.com",
+        ],
+    ):
+        main.main()
+    assert mock_send.call_args.kwargs["to_emails"] == ["only@example.com"]
+
+
+@patch("main._load_env_file")
+def test_main_send_from_state_bad_last_change_requires_flag(_load, tmp_path):
+    bad = dict(_STATE_SEND)
+    bad["last_change_type"] = "NO_CHANGE"
+    sf = tmp_path / "state.json"
+    sf.write_text(json.dumps(bad), encoding="utf-8")
+    with patch.object(
+        sys,
+        "argv",
+        ["main", "send-from-state", "--state-file", str(sf)],
+    ):
+        with pytest.raises(SystemExit) as exc_info:
+            main.main()
+    assert exc_info.value.code == 2
+
+
+@patch("main.send_notification")
+@patch("main._load_env_file")
+def test_main_send_from_state_explicit_change_type_overrides_state(mock_env, mock_send, tmp_path):
+    bad = dict(_STATE_SEND)
+    bad["last_change_type"] = "NO_CHANGE"
+    sf = tmp_path / "state.json"
+    sf.write_text(json.dumps(bad), encoding="utf-8")
+    with patch.object(
+        sys,
+        "argv",
+        [
+            "main",
+            "send-from-state",
+            "--state-file",
+            str(sf),
+            "--change-type",
+            "UPDATED_SAME_DATE",
+        ],
+    ):
+        main.main()
+    mock_send.assert_called_once()
+    assert mock_send.call_args.args[0] == "UPDATED_SAME_DATE"
+
+
+@patch("main.send_notification", side_effect=NotifyError("SendGrid boom"))
+@patch("main._load_env_file")
+def test_main_send_from_state_notify_error_exits(mock_env, mock_send, tmp_path):
+    sf = tmp_path / "state.json"
+    sf.write_text(json.dumps(_STATE_SEND), encoding="utf-8")
+    with patch.object(
+        sys,
+        "argv",
+        ["main", "send-from-state", "--state-file", str(sf)],
+    ):
+        with pytest.raises(SystemExit) as exc_info:
+            main.main()
+    assert exc_info.value.code == 1

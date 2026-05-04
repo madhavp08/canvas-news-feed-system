@@ -11,3 +11,224 @@
   "total_entries_parsed": 32
 }
 2026-05-02 18:45:54 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-05-02 21:03:09 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-02 21:03:09 fetcher INFO  Fetched front page via API (81946 bytes, 334.6 ms)
+2026-05-02 21:03:09 parser INFO  Parsed 32 News Feed entries; newest date: 'Friday, May 1' (7 items)
+2026-05-02 21:03:09 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Friday, May 1', checked_at=2026-05-01T13:44:53.028416-04:00
+2026-05-02 21:03:09 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Friday, May 1",
+  "newest_items_count": 7,
+  "total_entries_parsed": 32
+}
+2026-05-02 21:03:09 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-05-03 13:31:16 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-03 13:31:16 canvas_monitor ERROR  Unexpected error (will retry next cycle)
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 983, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ~~~~~~~~~~~~~~^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='umd.instructure.com', port=443): Failed to resolve 'umd.instructure.com' ([Errno 8] nodename nor servname provided, or not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/adapters.py", line 645, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='umd.instructure.com', port=443): Max retries exceeded with url: /api/v1/courses/1398395/front_page (Caused by NameResolutionError("HTTPSConnection(host='umd.instructure.com', port=443): Failed to resolve 'umd.instructure.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/main.py", line 143, in poll_loop
+    check_once(
+    ~~~~~~~~~~^
+        state_file=state_file,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        notify_emails=notify_emails,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/main.py", line 83, in check_once
+    html = fetch_from_url(
+        url, browser=browser, use_cookie_cache=use_cookie_cache
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/fetcher.py", line 331, in fetch_from_url
+    return _fetch_front_page_with_cookies(
+        api_url, course_url, browser, cookies
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/fetcher.py", line 253, in _fetch_front_page_with_cookies
+    resp = requests.get(
+        api_url,
+    ...<2 lines>...
+        timeout=30,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/sessions.py", line 592, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/sessions.py", line 706, in send
+    r = adapter.send(request, **kwargs)
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/adapters.py", line 678, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='umd.instructure.com', port=443): Max retries exceeded with url: /api/v1/courses/1398395/front_page (Caused by NameResolutionError("HTTPSConnection(host='umd.instructure.com', port=443): Failed to resolve 'umd.instructure.com' ([Errno 8] nodename nor servname provided, or not known)"))
+2026-05-03 13:31:16 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-05-03 17:42:44 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-03 17:42:44 canvas_monitor ERROR  Unexpected error (will retry next cycle)
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 983, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ~~~~~~~~~~~~~~^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='umd.instructure.com', port=443): Failed to resolve 'umd.instructure.com' ([Errno 8] nodename nor servname provided, or not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/adapters.py", line 645, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/urllib3/util/retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='umd.instructure.com', port=443): Max retries exceeded with url: /api/v1/courses/1398395/front_page (Caused by NameResolutionError("HTTPSConnection(host='umd.instructure.com', port=443): Failed to resolve 'umd.instructure.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/main.py", line 143, in poll_loop
+    check_once(
+    ~~~~~~~~~~^
+        state_file=state_file,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        notify_emails=notify_emails,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/main.py", line 83, in check_once
+    html = fetch_from_url(
+        url, browser=browser, use_cookie_cache=use_cookie_cache
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/fetcher.py", line 331, in fetch_from_url
+    return _fetch_front_page_with_cookies(
+        api_url, course_url, browser, cookies
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/fetcher.py", line 253, in _fetch_front_page_with_cookies
+    resp = requests.get(
+        api_url,
+    ...<2 lines>...
+        timeout=30,
+    )
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/sessions.py", line 592, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/sessions.py", line 706, in send
+    r = adapter.send(request, **kwargs)
+  File "/Users/madhav.p/Projects/canvas-news-feed-system/.venv/lib/python3.14/site-packages/requests/adapters.py", line 678, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='umd.instructure.com', port=443): Max retries exceeded with url: /api/v1/courses/1398395/front_page (Caused by NameResolutionError("HTTPSConnection(host='umd.instructure.com', port=443): Failed to resolve 'umd.instructure.com' ([Errno 8] nodename nor servname provided, or not known)"))
+2026-05-03 17:42:44 canvas_monitor INFO  Sleeping 3600 seconds until next check...
+2026-05-03 19:57:58 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-03 19:57:58 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-03 19:57:59 fetcher INFO  Fetched front page via API (81946 bytes, 264.4 ms)
+2026-05-03 19:57:59 parser INFO  Parsed 32 News Feed entries; newest date: 'Friday, May 1' (7 items)
+2026-05-03 19:57:59 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Friday, May 1', checked_at=2026-05-01T13:44:53.028416-04:00
+2026-05-03 19:57:59 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Friday, May 1",
+  "newest_items_count": 7,
+  "total_entries_parsed": 32
+}
+2026-05-03 19:57:59 canvas_monitor INFO  Sleeping 3600 seconds until next check...
