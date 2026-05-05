@@ -14,19 +14,48 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# Minimum keys required to compare against a fresh parse and to rebuild notifications.
+STATE_REQUIRED_KEYS = frozenset(
+    {
+        "latest_date_raw",
+        "latest_date_normalized",
+        "latest_items",
+        "latest_content_text",
+        "latest_content_hash",
+    }
+)
+
 
 def load_state(path: str) -> dict | None:
     """Load previously saved state from a JSON file.
 
-    Returns None if the file does not exist (first run).
-    Raises on malformed JSON so corruption is never silent.
+    Returns None if the file does not exist (first run), if JSON is invalid,
+    or if required keys are missing (treated as no prior state).
     """
     p = Path(path)
     if not p.exists():
         logger.info("No existing state file at %s (first run)", path)
         return None
 
-    data = json.loads(p.read_text(encoding="utf-8"))
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        logger.error("State file %s is not valid JSON: %s", path, exc)
+        return None
+
+    if not isinstance(data, dict):
+        logger.error("State file %s: root JSON value must be an object", path)
+        return None
+
+    missing = STATE_REQUIRED_KEYS - data.keys()
+    if missing:
+        logger.error(
+            "State file %s is missing required key(s): %s — treating as no prior state",
+            path,
+            ", ".join(sorted(missing)),
+        )
+        return None
+
     logger.info(
         "Loaded state: last_change_type=%s, latest_date='%s', checked_at=%s",
         data.get("last_change_type"),

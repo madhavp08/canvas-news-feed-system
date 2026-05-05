@@ -41,6 +41,32 @@ def test_coerce_rejects_blank_entry():
         _coerce_notify_email_override(["ok@example.com", "   "])
 
 
+def test_load_env_file_override_keys_win_over_shell(tmp_path, monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "shell")
+    monkeypatch.setenv("SENDGRID_API_KEY", "shell_sg")
+    p = tmp_path / ".env"
+    p.write_text(
+        "GEMINI_API_KEY=dotenv\nSENDGRID_API_KEY=dotenv_sg\n", encoding="utf-8"
+    )
+    applied = main._load_env_file(str(p))
+    import os
+
+    assert os.environ["GEMINI_API_KEY"] == "dotenv"
+    assert os.environ["SENDGRID_API_KEY"] == "dotenv_sg"
+    assert "GEMINI_API_KEY" in applied
+    assert "SENDGRID_API_KEY" in applied
+
+
+def test_load_env_file_unlisted_key_uses_setdefault(tmp_path, monkeypatch):
+    monkeypatch.setenv("UNLISTED_CUSTOM", "keep_me")
+    p = tmp_path / ".env"
+    p.write_text("UNLISTED_CUSTOM=from_file\n", encoding="utf-8")
+    main._load_env_file(str(p))
+    import os
+
+    assert os.environ["UNLISTED_CUSTOM"] == "keep_me"
+
+
 @patch("main.detect_change", return_value="NEW_DATE")
 @patch("main.send_notification")
 @patch("main.save_state")
@@ -56,6 +82,7 @@ def test_check_once_passes_to_emails_when_overridden(
         notify_emails=["you@example.com", "other@example.com"],
     )
     mock_send.assert_called_once()
+    _save.assert_called_once()
     assert mock_send.call_args.kwargs["to_emails"] == [
         "you@example.com",
         "other@example.com",
@@ -73,6 +100,7 @@ def test_check_once_uses_env_recipients_when_no_override(
 ):
     check_once(state_file="state.json", url="http://example.test/course")
     mock_send.assert_called_once()
+    _save.assert_called_once()
     assert mock_send.call_args.kwargs.get("to_emails") is None
 
 
@@ -92,11 +120,12 @@ def test_check_once_notify_false_does_not_call_send(
         notify_emails=["you@example.com"],
     )
     mock_send.assert_not_called()
+    _save.assert_called_once()
 
 
 @patch("main.poll_loop")
 @patch("main.check_once", return_value=_SUMMARY)
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_check_passes_coerced_notify_emails(_load, mock_check, _poll):
     with patch.object(
         sys,
@@ -121,7 +150,7 @@ def test_main_check_passes_coerced_notify_emails(_load, mock_check, _poll):
 
 
 @patch("main.poll_loop")
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_poll_passes_coerced_notify_emails(_load, mock_poll):
     with patch.object(
         sys,
@@ -140,7 +169,7 @@ def test_main_poll_passes_coerced_notify_emails(_load, mock_poll):
     assert mock_poll.call_args.kwargs["notify_emails"] == ["solo@example.com"]
 
 
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_check_invalid_notify_email_exits(_load):
     with patch.object(
         sys,
@@ -163,7 +192,7 @@ _STATE_SEND = {
 
 
 @patch("main.send_notification")
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_send_from_state_uses_saved_change_type(mock_env, mock_send, tmp_path):
     sf = tmp_path / "state.json"
     sf.write_text(json.dumps(_STATE_SEND), encoding="utf-8")
@@ -181,7 +210,7 @@ def test_main_send_from_state_uses_saved_change_type(mock_env, mock_send, tmp_pa
 
 
 @patch("main.send_notification")
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_send_from_state_notify_email_override(mock_env, mock_send, tmp_path):
     sf = tmp_path / "state.json"
     sf.write_text(json.dumps(_STATE_SEND), encoding="utf-8")
@@ -201,7 +230,7 @@ def test_main_send_from_state_notify_email_override(mock_env, mock_send, tmp_pat
     assert mock_send.call_args.kwargs["to_emails"] == ["only@example.com"]
 
 
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_send_from_state_bad_last_change_requires_flag(_load, tmp_path):
     bad = dict(_STATE_SEND)
     bad["last_change_type"] = "NO_CHANGE"
@@ -218,7 +247,7 @@ def test_main_send_from_state_bad_last_change_requires_flag(_load, tmp_path):
 
 
 @patch("main.send_notification")
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_send_from_state_explicit_change_type_overrides_state(mock_env, mock_send, tmp_path):
     bad = dict(_STATE_SEND)
     bad["last_change_type"] = "NO_CHANGE"
@@ -241,8 +270,22 @@ def test_main_send_from_state_explicit_change_type_overrides_state(mock_env, moc
     assert mock_send.call_args.args[0] == "UPDATED_SAME_DATE"
 
 
+@patch("main._load_env_file", return_value=[])
+def test_main_send_from_state_incomplete_state_exits(_load, tmp_path):
+    sf = tmp_path / "state.json"
+    sf.write_text(json.dumps({"latest_date_raw": "only_one_key"}), encoding="utf-8")
+    with patch.object(
+        sys,
+        "argv",
+        ["main", "send-from-state", "--state-file", str(sf)],
+    ):
+        with pytest.raises(SystemExit) as exc_info:
+            main.main()
+    assert exc_info.value.code == 2
+
+
 @patch("main.send_notification", side_effect=NotifyError("SendGrid boom"))
-@patch("main._load_env_file")
+@patch("main._load_env_file", return_value=[])
 def test_main_send_from_state_notify_error_exits(mock_env, mock_send, tmp_path):
     sf = tmp_path / "state.json"
     sf.write_text(json.dumps(_STATE_SEND), encoding="utf-8")
@@ -254,3 +297,45 @@ def test_main_send_from_state_notify_error_exits(mock_env, mock_send, tmp_path):
         with pytest.raises(SystemExit) as exc_info:
             main.main()
     assert exc_info.value.code == 1
+
+
+@patch("main.detect_change", return_value="NEW_DATE")
+@patch("main.send_notification", side_effect=NotifyError("SendGrid boom"))
+@patch("main.save_state")
+@patch("main.load_state")
+@patch("main.parse_news_feed", return_value=[_ENTRY])
+@patch("main.fetch_from_url", return_value="<html/>")
+def test_check_once_notify_error_does_not_save_state(
+    _fetch, _parse, _load, mock_save, mock_send, _dc
+):
+    check_once(state_file="state.json", url="http://example.test/course")
+    mock_send.assert_called_once()
+    mock_save.assert_not_called()
+
+
+@patch("main.detect_change", return_value="INITIALIZED")
+@patch("main.send_notification")
+@patch("main.save_state")
+@patch("main.load_state")
+@patch("main.parse_news_feed", return_value=[_ENTRY])
+@patch("main.fetch_from_url", return_value="<html/>")
+def test_check_once_initialized_saves_without_email(
+    _fetch, _parse, _load, mock_save, mock_send, _dc
+):
+    check_once(state_file="state.json", url="http://example.test/course", notify=True)
+    mock_send.assert_not_called()
+    mock_save.assert_called_once()
+
+
+@patch("main.detect_change", return_value="NO_CHANGE")
+@patch("main.send_notification")
+@patch("main.save_state")
+@patch("main.load_state")
+@patch("main.parse_news_feed", return_value=[_ENTRY])
+@patch("main.fetch_from_url", return_value="<html/>")
+def test_check_once_no_change_does_not_save_state(
+    _fetch, _parse, _load, mock_save, mock_send, _dc
+):
+    check_once(state_file="state.json", url="http://example.test/course")
+    mock_send.assert_not_called()
+    mock_save.assert_not_called()

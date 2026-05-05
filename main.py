@@ -24,13 +24,28 @@ from pathlib import Path
 
 from detector import detect_change
 from fetcher import FetchError, fetch_from_file, fetch_from_url
-from notifier import NotifyError, send_notification
+from notifier import NotifyError, react_email_subprocess_available, send_notification
 from parser import ParseError, parse_news_feed
 from state_store import load_state, save_state
 
 logger = logging.getLogger("canvas_monitor")
 
 _NOTIFY_CHANGE_TYPES = {"NEW_DATE", "UPDATED_SAME_DATE"}
+
+# Keys for which `.env` wins over pre-exported shell variables (API secrets, config).
+_DOTENV_OVERRIDE_KEYS = frozenset(
+    {
+        "GEMINI_API_KEY",
+        "GEMINI_MODEL",
+        "SENDGRID_API_KEY",
+        "SENDGRID_FROM_EMAIL",
+        "NOTIFY_EMAILS",
+        "CANVAS_COURSE_URL",
+        "BROWSER",
+        "POLL_INTERVAL",
+        "SKIP_REACT_EMAIL_HTML",
+    }
+)
 
 _STATE_ENTRY_KEYS = (
     "latest_date_raw",
@@ -117,19 +132,34 @@ def _coerce_notify_email_override(raw: list[str] | None) -> list[str] | None:
     return list(dict.fromkeys(cleaned))
 
 
-def _load_env_file(path: str = ".env") -> None:
+def _load_env_file(path: str = ".env") -> list[str]:
     """Load key=value pairs from a .env file into os.environ.
-    Skips blank lines, comments, and missing files."""
+
+    For keys in ``_DOTENV_OVERRIDE_KEYS``, the file value always wins over any
+    value already in the process environment. Other keys use ``setdefault``
+    (shell/export wins if already set).
+
+    Returns a list of override keys that appeared in the file (may contain
+    duplicates if the file repeats a key; log callers may dedupe).
+    """
     p = Path(path)
     if not p.exists():
-        return
+        return []
+    overridden: list[str] = []
     for line in p.read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         if "=" in line:
             key, _, value = line.partition("=")
-            os.environ.setdefault(key.strip(), value.strip())
+            k = key.strip()
+            v = value.strip()
+            if k in _DOTENV_OVERRIDE_KEYS:
+                os.environ[k] = v
+                overridden.append(k)
+            else:
+                os.environ.setdefault(k, v)
+    return overridden
 
 
 def check_once(
@@ -158,15 +188,17 @@ def check_once(
     old_state = load_state(state_file)
     change_type = detect_change(newest, old_state)
 
-    if change_type != "NO_CHANGE":
-        save_state(state_file, newest, change_type)
-
-    if notify and change_type in _NOTIFY_CHANGE_TYPES:
+    if change_type == "NO_CHANGE":
+        pass
+    elif notify and change_type in _NOTIFY_CHANGE_TYPES:
         try:
             send_notification(change_type, newest, to_emails=notify_emails)
             logger.info("Notification sent for %s", change_type)
+            save_state(state_file, newest, change_type)
         except NotifyError as exc:
             logger.error("Failed to send notification: %s", exc)
+    else:
+        save_state(state_file, newest, change_type)
 
     summary = {
         "change_type": change_type,
@@ -193,6 +225,20 @@ def poll_loop(
         "Starting poll loop: interval=%ds, url=%s, browser=%s",
         interval, url, browser,
     )
+    if os.environ.get("SKIP_REACT_EMAIL_HTML", "").strip() == "1":
+        logger.warning(
+            "SKIP_REACT_EMAIL_HTML=1 — emails use legacy HTML only (unset for React Email)"
+        )
+    elif react_email_subprocess_available():
+        logger.info(
+            "React Email CLI available — notifications will use the styled template "
+            "when validation succeeds (see per-send logs)"
+        )
+    else:
+        logger.warning(
+            "React Email CLI missing — run: cd email-render && npm ci "
+            "(notifications fall back to simple HTML)"
+        )
 
     shutdown = False
 
@@ -243,7 +289,7 @@ def main() -> None:
     ):
         sys.argv.insert(1, "check")
 
-    _load_env_file()
+    dotenv_overrides = _load_env_file()
 
     ap = argparse.ArgumentParser(
         description="Canvas News Feed monitor — detect and notify on announcements."
@@ -328,6 +374,12 @@ def main() -> None:
         format="%(asctime)s %(name)s %(levelname)s  %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+    if dotenv_overrides:
+        logger.info(
+            ".env overrides shell for: %s",
+            ", ".join(sorted(frozenset(dotenv_overrides))),
+        )
 
     if args.command == "check":
         try:

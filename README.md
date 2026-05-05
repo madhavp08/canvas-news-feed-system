@@ -43,6 +43,8 @@ You'll need:
 - A **verified sender** email address in SendGrid
 - The email addresses of your classmates to notify
 
+**Precedence:** For API keys, `NOTIFY_EMAILS`, `CANVAS_COURSE_URL`, `BROWSER`, `POLL_INTERVAL`, `GEMINI_MODEL`, and `SKIP_REACT_EMAIL_HTML`, **values in `.env` override** anything exported in your shell once the process starts. Other `.env` entries use “set if missing” semantics (shell wins if already set).
+
 ## Usage
 
 ### One-shot check
@@ -91,6 +93,7 @@ You can also run `chmod +x scripts/run_poll.sh` once, then `./scripts/run_poll.s
 - **Run:** From the project directory with the venv activated: `python main.py poll`.
 - **Background:** `nohup python main.py poll >> monitor.log 2>&1 &` keeps polling if you close the terminal. For login-time start, use **launchd** (macOS) or schedule `main.py check` with **cron** if you prefer not to leave a long-running process.
 - **First run:** Baseline state is saved with change type `INITIALIZED` — **no email is sent**. Emails only go out on `NEW_DATE` or `UPDATED_SAME_DATE`.
+- **React Email + TL;DR:** Run `cd email-render && npm ci` so sends use the styled template (TL;DR appears in the gray summary card when `GEMINI_API_KEY` is set). Logs show **`Email HTML: using React Email layout (validated)`** on success, or **`Email HTML: using legacy template`** when Node deps are missing, `SKIP_REACT_EMAIL_HTML=1`, or validation fell back—see warnings on the same run.
 - **Comet / Canvas:** Live fetches use cookies from the browser you set in `BROWSER`. Stay logged into Canvas there; renew the session if checks start failing. On macOS, approve keychain prompts once (e.g. **Always Allow**) so cookie decryption works.
 
 ## How it works

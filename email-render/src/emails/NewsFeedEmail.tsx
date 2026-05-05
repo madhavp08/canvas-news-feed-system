@@ -5,7 +5,7 @@ import {
   Hr,
   Html,
   Link,
-  Preview,
+  Section,
   Text,
 } from "@react-email/components";
 import { Fragment } from "react";
@@ -62,7 +62,6 @@ export function NewsFeedEmail({
   return (
     <Html>
       <Head />
-      <Preview>{previewText}</Preview>
       <Body
         style={{
           margin: 0,
@@ -70,6 +69,23 @@ export function NewsFeedEmail({
           fontFamily: "Arial, Helvetica, sans-serif",
         }}
       >
+        {/* Preheader must live inside <body>. <Preview> renders before <body> and
+            breaks HTML; Gmail has been observed to show a completely blank message. */}
+        {previewText ? (
+          <Section
+            style={{
+              display: "none",
+              maxHeight: "0px",
+              overflow: "hidden",
+              lineHeight: "1px",
+              opacity: 0,
+            }}
+          >
+            <Text style={{ margin: 0, fontSize: "1px", color: "transparent" }}>
+              {previewText}
+            </Text>
+          </Section>
+        ) : null}
         <Container
           style={{ maxWidth: "600px", margin: "0 auto", padding: "24px 16px" }}
         >

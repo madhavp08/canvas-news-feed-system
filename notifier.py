@@ -11,11 +11,12 @@ import re
 import subprocess
 import sys
 from collections.abc import Callable
+from html import unescape as _html_unescape
 from pathlib import Path
 from typing import Any
 
 import requests
-from parser import ItemSegment, canonical_line_plain
+from parser import ItemSegment, canonical_line_plain, normalize_text
 from google import genai
 from google.genai import types as genai_types
 
@@ -40,6 +41,164 @@ Summarize only what classmates need to act on or remember. Do NOT restate every 
 # React Email CLI (see email-render/). Subprocess timeout in seconds.
 _REACT_EMAIL_RENDER_TIMEOUT = 25
 _PREVIEW_MAX_LEN = 140
+
+# HTML from subprocess/render must be at least this long unless plain is tiny.
+_MIN_EMAIL_HTML_CHARS = 80
+# When plain is long but HTML is tiny, treat React output as broken.
+_HTML_SUSPECT_PLAIN_MIN = 400
+_HTML_SUSPECT_MAX = 150
+
+
+def _strip_bom(s: str) -> str:
+    if s.startswith("\ufeff"):
+        return s.lstrip("\ufeff")
+    return s
+
+
+def _normalize_rendered_html_fragment(raw: str | None) -> str | None:
+    """Return HTML starting with ``<`` or ``None`` if *raw* is not usable.
+
+    Strips BOM/edges, drops leading stderr-style noise before ``<!DOCTYPE`` / ``<html``.
+    """
+    if raw is None:
+        return None
+    s = _strip_bom(str(raw).strip())
+    if not s:
+        return None
+    cand = s.lstrip()
+    if cand.startswith("<"):
+        return s
+    low = s.lower()
+    for marker in ("<!doctype", "<html"):
+        idx = low.find(marker)
+        if idx >= 0:
+            sliced = s[idx:].strip()
+            if sliced.lstrip().startswith("<"):
+                if idx > 0:
+                    logger.warning(
+                        "Stripped %d leading non-HTML bytes from renderer stdout",
+                        idx,
+                    )
+                return sliced
+    return None
+
+
+def _first_item_content_needles(items: list[list[ItemSegment]]) -> list[str]:
+    """Substrings that should appear in HTML for the first bulletin line."""
+    if not items:
+        return []
+    line = items[0]
+    needles: list[str] = []
+    lower_seen: set[str] = set()
+
+    def add_one(x: str) -> None:
+        t = normalize_text(x)
+        if len(t) >= 3:
+            k = t.lower()
+            if k not in lower_seen:
+                lower_seen.add(k)
+                needles.append(t)
+
+    plain = canonical_line_plain(line)
+    if plain:
+        add_one(plain)
+    for seg in line:
+        if seg["type"] == "link":
+            add_one(str(seg.get("label") or ""))
+        else:
+            add_one(str(seg.get("text") or ""))
+    return needles
+
+
+def _html_size_suspicious(html: str, plain: str) -> bool:
+    if len(html) < _MIN_EMAIL_HTML_CHARS and len(plain) > 40:
+        return True
+    if len(plain) >= _HTML_SUSPECT_PLAIN_MIN and len(html) <= _HTML_SUSPECT_MAX:
+        return True
+    return False
+
+
+def _html_text_layer_for_match(html: str) -> str:
+    """Lowercased, entity-decoded view of HTML for substring checks.
+
+    React Email escapes ``&``, ``<``, ``>`` in text; comparing raw needles to
+    the HTML string false-triggers legacy fallback.
+    """
+    return _html_unescape(html).lower()
+
+
+def _email_html_passes_send_checks(
+    html: str,
+    *,
+    date_raw: str,
+    items: list[list[ItemSegment]],
+    plain: str,
+) -> bool:
+    if not html or not html.lstrip().startswith("<"):
+        return False
+    if _html_size_suspicious(html, plain):
+        logger.warning(
+            "Email HTML looks too small (%d chars) vs plain (%d chars); rejecting",
+            len(html),
+            len(plain),
+        )
+        return False
+    hl = _html_text_layer_for_match(html)
+    if date_raw.lower() not in hl:
+        logger.error(
+            "Email HTML missing announcement date %r; rejecting rendered HTML",
+            date_raw,
+        )
+        return False
+    if items:
+        needles = _first_item_content_needles(items)
+        if needles:
+            if not any(n.lower() in hl for n in needles):
+                logger.error(
+                    "Email HTML missing expected content from first bulletin line; "
+                    "rejecting rendered HTML"
+                )
+                return False
+    return True
+
+
+def _ensure_sendgrid_html(
+    html_raw: str | None,
+    change_type: str,
+    send_entry: dict,
+    tldr_raw: str | None,
+    plain: str,
+) -> str:
+    """Prefer React HTML when it normalizes and validates; otherwise legacy + TL;DR."""
+    normalized = _normalize_rendered_html_fragment(html_raw)
+    items: list[list[ItemSegment]] = send_entry["items"]
+    date_raw = str(send_entry["date_raw"])
+    if normalized is not None and _email_html_passes_send_checks(
+        normalized,
+        date_raw=date_raw,
+        items=items,
+        plain=plain,
+    ):
+        logger.info("Email HTML: using React Email layout (validated)")
+        return normalized
+
+    if html_raw and str(html_raw).strip():
+        if normalized is None:
+            logger.warning(
+                "Renderer output was not valid HTML; falling back to legacy template"
+            )
+        else:
+            logger.error(
+                "Rendered HTML failed validation; falling back to legacy template"
+            )
+
+    out = _build_html_body(change_type, send_entry)
+    if tldr_raw:
+        out = _prepend_tldr_html(out, tldr_raw)
+    logger.info(
+        "Email HTML: using legacy template (React render skipped or validation failed)"
+    )
+    return out
 
 
 def normalize_tldr(raw: str | None) -> dict | None:
@@ -152,13 +311,19 @@ def _tsx_executable(email_render_dir: Path) -> Path | None:
     return p if p.exists() else None
 
 
+def react_email_subprocess_available() -> bool:
+    """True when ``email-render`` has a local ``tsx`` CLI (React Email HTML path)."""
+    email_dir = Path(__file__).resolve().parent / "email-render"
+    return _tsx_executable(email_dir) is not None
+
+
 def _render_news_email_html_subprocess(props: dict) -> str | None:
     root = Path(__file__).resolve().parent
     email_dir = root / "email-render"
     tsx = _tsx_executable(email_dir)
     if tsx is None:
-        logger.debug(
-            "React Email skipped: tsx not found under %s (run npm ci in email-render/)",
+        logger.warning(
+            "React Email skipped: tsx not found under %s — run: cd email-render && npm ci",
             email_dir,
         )
         return None
@@ -194,10 +359,9 @@ def _render_news_email_html_subprocess(props: dict) -> str | None:
         )
         return None
 
-    html = (proc.stdout or "").strip()
+    html = _normalize_rendered_html_fragment(proc.stdout)
     if not html:
-        logger.warning("React Email returned empty HTML; using legacy HTML")
-        return None
+        logger.warning("React Email stdout is not valid HTML; using legacy HTML")
     return html
 
 
@@ -206,16 +370,26 @@ def _render_news_email_html(
     render_html_fn: Callable[[dict], str | None] | None,
 ) -> str | None:
     if os.environ.get("SKIP_REACT_EMAIL_HTML", "").strip() == "1":
+        logger.info(
+            "SKIP_REACT_EMAIL_HTML=1 — using legacy HTML (unset to use React Email)"
+        )
         return None
     if render_html_fn is not None:
         try:
-            out = render_html_fn(props)
-            if out and out.strip():
-                return out.strip()
-            logger.warning(
-                "React Email injectable renderer returned empty output; using legacy HTML"
-            )
-            return None
+            raw_out = render_html_fn(props)
+            if not raw_out or not str(raw_out).strip():
+                logger.warning(
+                    "React Email injectable renderer returned empty output; using legacy HTML"
+                )
+                return None
+            norm = _normalize_rendered_html_fragment(str(raw_out))
+            if norm is None:
+                logger.warning(
+                    "React Email injectable output could not be coerced to HTML; "
+                    "using legacy HTML"
+                )
+                return None
+            return norm
         except Exception as exc:  # noqa: BLE001 — boundary: custom renderer may raise
             logger.warning(
                 "React Email injectable renderer failed: %s; using legacy HTML", exc
@@ -491,7 +665,11 @@ def send_notification(
     without it.
 
     HTML body is rendered with React Email (``email-render/``) when the CLI is
-    available. Set ``SKIP_REACT_EMAIL_HTML=1`` to force legacy HTML, or pass
+    available. Rendered HTML is normalized (leading non-HTML noise stripped) and
+    validated (date and first bulletin line must appear); failing that, the
+    legacy HTML template is used so clients still receive a readable body.
+
+    Set ``SKIP_REACT_EMAIL_HTML=1`` to force legacy HTML, or pass
     ``render_html_fn`` for tests / custom rendering.
     """
     api_key = api_key or os.environ.get("SENDGRID_API_KEY")
@@ -527,11 +705,16 @@ def send_notification(
         subject, newest_entry["date_raw"], tldr_norm, tldr_raw
     )
     props = _react_email_props(change_type, send_entry, tldr_norm, preview)
-    html = _render_news_email_html(props, render_html_fn)
-    if html is None:
-        html = _build_html_body(change_type, send_entry)
-        if tldr_raw:
-            html = _prepend_tldr_html(html, tldr_raw)
+    html_raw = _render_news_email_html(props, render_html_fn)
+    html = _ensure_sendgrid_html(
+        html_raw, change_type, send_entry, tldr_raw, plain
+    )
+
+    logger.info(
+        "Email body sizes: text/plain=%d chars, text/html=%d chars",
+        len(plain),
+        len(html),
+    )
 
     limit = SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST
     batches = [to_emails[i : i + limit] for i in range(0, len(to_emails), limit)]

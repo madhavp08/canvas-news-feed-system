@@ -1,18 +1,15 @@
-2026-05-05 15:47:27 canvas_monitor INFO  Starting poll loop: interval=900s, url=https://umd.instructure.com/courses/1398395, browser=comet
-2026-05-05 15:47:27 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
-2026-05-05 15:47:27 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
-2026-05-05 15:47:27 fetcher INFO  Fetched front page via API (83558 bytes, 242.1 ms)
-2026-05-05 15:47:27 parser INFO  Parsed 33 News Feed entries; newest date: 'Sunday, May 3' (3 items)
-2026-05-05 15:47:27 state_store INFO  Loaded state: last_change_type=UPDATED_SAME_DATE, latest_date='Sunday, May 3', checked_at=2026-05-05T13:43:34.991677-04:00
-2026-05-05 15:47:27 state_store INFO  Saved state: change_type=UPDATED_SAME_DATE, date='Sunday, May 3', hash=09c907390397…
-2026-05-05 15:47:27 google_genai.models INFO  AFC is enabled with max remote calls: 10.
-2026-05-05 15:47:30 httpx INFO  HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent "HTTP/1.1 200 OK"
-2026-05-05 15:47:31 notifier INFO  Email sent to 15 recipient(s) in 1 SendGrid request(s) (HTTP 202): CMSC216 News Feed edited — Sunday, May 3
-2026-05-05 15:47:31 canvas_monitor INFO  Notification sent for UPDATED_SAME_DATE
-2026-05-05 15:47:31 canvas_monitor INFO  Check result: {
-  "change_type": "UPDATED_SAME_DATE",
-  "newest_date": "Sunday, May 3",
-  "newest_items_count": 3,
-  "total_entries_parsed": 33
+2026-05-05 19:56:55 canvas_monitor INFO  .env overrides shell for: BROWSER, CANVAS_COURSE_URL, GEMINI_API_KEY, GEMINI_MODEL, NOTIFY_EMAILS, POLL_INTERVAL, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
+2026-05-05 19:56:55 canvas_monitor INFO  Starting poll loop: interval=900s, url=https://umd.instructure.com/courses/1398395, browser=comet
+2026-05-05 19:56:55 canvas_monitor INFO  React Email CLI available — notifications will use the styled template when validation succeeds (see per-send logs)
+2026-05-05 19:56:55 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-05 19:56:55 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-05 19:56:55 fetcher INFO  Fetched front page via API (88117 bytes, 207.2 ms)
+2026-05-05 19:56:55 parser INFO  Parsed 34 News Feed entries; newest date: 'Tuesday, May 5' (8 items)
+2026-05-05 19:56:55 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Tuesday, May 5', checked_at=2026-05-05T19:25:36.856476-04:00
+2026-05-05 19:56:55 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Tuesday, May 5",
+  "newest_items_count": 8,
+  "total_entries_parsed": 34
 }
-2026-05-05 15:47:31 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-05 19:56:55 canvas_monitor INFO  Sleeping 900 seconds until next check...
