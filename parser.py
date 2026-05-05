@@ -49,6 +49,15 @@ def normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def collapse_whitespace_runs(text: str) -> str:
+    """Collapse internal/newline whitespace runs without trimming ends.
+
+    Used when building text segments so spaces next to ``<a>`` boundaries
+    (which often sit at the trimmed edge of a sibling text node) survive.
+    """
+    return re.sub(r"\s+", " ", text)
+
+
 def compute_hash(text: str) -> str:
     """SHA-256 hex digest of the given text."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -183,6 +192,12 @@ def _looks_like_date(text: str) -> bool:
 
 
 def _merge_adjacent_text(segments: list[ItemSegment]) -> list[ItemSegment]:
+    """Join consecutive text segments without inserting a synthetic space.
+
+    Whitespace at HTML boundaries is already represented inside the segment
+    strings; an extra inserted space here incorrectly removed boundary spaces
+    via ``strip()`` when combined segments ended with a trailing space.
+    """
     out: list[ItemSegment] = []
     for seg in segments:
         if seg["type"] != "text":
@@ -190,10 +205,28 @@ def _merge_adjacent_text(segments: list[ItemSegment]) -> list[ItemSegment]:
             continue
         if out and out[-1]["type"] == "text":
             prev_t = out[-1]["text"]
-            merged = normalize_text(prev_t + " " + seg["text"])
+            merged = collapse_whitespace_runs(prev_t + seg["text"])
             out[-1] = TextSegment(type="text", text=merged)
         else:
             out.append(TextSegment(type="text", text=seg["text"]))
+    return out
+
+
+def _trim_outer_line_segments(segments: list[ItemSegment]) -> list[ItemSegment]:
+    """Remove leading/trailing whitespace for the line (``<li>``) as a whole."""
+    if not segments:
+        return segments
+    out = list(segments)
+    if out[0]["type"] == "text":
+        t = out[0]["text"].lstrip()
+        if not t:
+            return _trim_outer_line_segments(out[1:])
+        out[0] = TextSegment(type="text", text=t)
+    if out[-1]["type"] == "text":
+        t = out[-1]["text"].rstrip()
+        if not t:
+            return _trim_outer_line_segments(out[:-1])
+        out[-1] = TextSegment(type="text", text=t)
     return out
 
 
@@ -204,7 +237,7 @@ def _segments_from_children(container: Tag, soup: BeautifulSoup, origin_fallback
     def flush() -> None:
         nonlocal buf
         if buf:
-            t = normalize_text("".join(buf))
+            t = collapse_whitespace_runs("".join(buf))
             if t:
                 segs.append(TextSegment(type="text", text=t))
             buf = []
@@ -237,7 +270,7 @@ def _segments_from_children(container: Tag, soup: BeautifulSoup, origin_fallback
 
 
 def _extract_li_segments(li: Tag, soup: BeautifulSoup, origin_fallback: str) -> list[ItemSegment]:
-    return _merge_adjacent_text(_segments_from_children(li, soup, origin_fallback))
+    return _trim_outer_line_segments(_segments_from_children(li, soup, origin_fallback))
 
 
 def _line_nonempty(segments: list[ItemSegment]) -> bool:

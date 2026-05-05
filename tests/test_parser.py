@@ -197,6 +197,29 @@ class TestParseNewsFeed:
         entries = parse_news_feed(MINIMAL_HTML)
         assert len(entries) == 1
 
+    def test_spaces_around_anchor_preserved_in_segments(self):
+        """Boundary spaces next to <a> must survive stripping (email clients)."""
+        html = """\
+<html><head><base href="https://school.instructure.com/"/></head><body>
+<h2>News feed</h2>
+<h3>Monday, May 5</h3>
+<ol><li>Before <a href="/files/1.pdf">the doc</a> after.</li></ol>
+</body></html>
+"""
+        entries = parse_news_feed(html)
+        line = entries[0]["items"][0]
+        rendered = "".join(
+            s["text"]
+            if s["type"] == "text"
+            else s["label"]
+            for s in line
+        )
+        assert rendered == "Before the doc after."
+        typ = [s["type"] for s in line]
+        assert typ == ["text", "link", "text"]
+        assert line[0]["text"].endswith(" ")
+        assert line[2]["text"].startswith(" ")
+
 
 class TestParserErrors:
     def test_no_news_feed_section(self):
