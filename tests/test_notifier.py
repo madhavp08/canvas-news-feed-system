@@ -9,7 +9,9 @@ from pathlib import Path
 from notifier import (
     NotifyError,
     SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST,
+    _append_promo_to_plain,
     _build_body,
+    _build_html_body,
     _build_subject,
     _email_html_passes_send_checks,
     _ensure_sendgrid_html,
@@ -20,6 +22,11 @@ from notifier import (
     normalize_tldr,
     send_notification,
 )
+
+
+@pytest.fixture(autouse=True)
+def _clear_promo_email_env(monkeypatch):
+    monkeypatch.delenv("EMAIL_PROMO_TEXT", raising=False)
 
 
 def _sample_entry():
@@ -150,6 +157,7 @@ def test_injected_react_html_used_without_legacy_tldr_prefix(mock_post):
     def fake_render(props: dict) -> str:
         assert props["changeType"] == "NEW_DATE"
         assert props["tldr"] is None
+        assert props["promoText"] is None
         d = props["dateRaw"]
         return f"<html><body>{d} Announcement A</body></html>"
 
@@ -214,7 +222,8 @@ def test_legacy_html_when_render_returns_none(mock_post, _mock_gemini):
         render_html_fn=lambda _props: None,
     )
     html = _html_from_payload(mock_post.call_args.kwargs["json"])
-    assert "<strong>TL;DR" in html
+    assert "#FFB8B8" in html
+    assert "Summary here" in html
 
 
 def test_normalize_rendered_html_fragment_strips_leading_noise():
@@ -240,6 +249,47 @@ def test_normalize_rendered_html_fragment_strips_bom():
 
 def test_normalize_rendered_html_fragment_garbage_returns_none():
     assert _normalize_rendered_html_fragment("not html at all") is None
+
+
+def test_react_email_props_promo_null(monkeypatch):
+    monkeypatch.delenv("EMAIL_PROMO_TEXT", raising=False)
+    entry = {"date_raw": "Monday", "items": ["x"]}
+    subj = _build_subject("NEW_DATE", entry["date_raw"])
+    preview = _preview_text(subj, entry["date_raw"], None, None)
+    props = _react_email_props("NEW_DATE", entry, None, preview)
+    assert props["promoText"] is None
+
+
+def test_react_email_props_promo_from_env(monkeypatch):
+    monkeypatch.setenv(
+        "EMAIL_PROMO_TEXT", "Try https://www.thinkex.app/home "
+    )
+    entry = {"date_raw": "Monday", "items": ["x"]}
+    subj = _build_subject("NEW_DATE", entry["date_raw"])
+    preview = _preview_text(subj, entry["date_raw"], None, None)
+    props = _react_email_props("NEW_DATE", entry, None, preview)
+    assert props["promoText"] == "Try https://www.thinkex.app/home"
+
+
+def test_legacy_html_promo_escaped_and_linkified(monkeypatch):
+    monkeypatch.setenv(
+        "EMAIL_PROMO_TEXT", "See literal angle brackets &lt;x&gt;: https://example.com/foo ok"
+    )
+    entry = {
+        "date_raw": "Tuesday, May 5",
+        "items": [[{"type": "text", "text": "one"}]],
+    }
+    html = _build_html_body("NEW_DATE", entry)
+    assert "Sent by Madhav's Canvas News Feed Monitor" in html
+    assert "&amp;lt;x&amp;gt;" in html
+    assert 'href="https://example.com/foo"' in html
+
+
+def test_append_promo_to_plain(monkeypatch):
+    monkeypatch.setenv("EMAIL_PROMO_TEXT", "Promo line")
+    body = _build_body("NEW_DATE", _sample_entry())
+    out = _append_promo_to_plain(body)
+    assert "\n---\nPromo line\n" in out
 
 
 def test_email_html_passes_send_checks_decodes_entities_in_body():
@@ -357,3 +407,36 @@ def test_subprocess_react_email_passes_content_checks():
     assert "First bulletin" in html
     assert "τέστ" in html
     assert "Example link" in html
+
+
+@pytest.mark.skipif(not _tsx_bin().exists(), reason="email-render tsx not installed")
+def test_subprocess_react_email_promo_before_footer(monkeypatch):
+    """Smoke: TL;DR card (#FFB8B8), bulletin, promo callout with link, divider, attribution."""
+    monkeypatch.setenv(
+        "EMAIL_PROMO_TEXT",
+        "SMOKE_PROMO_UNIQUE study finals https://www.thinkex.app/home end",
+    )
+    entry = {
+        "date_raw": "Wednesday, January 14",
+        "items": [[{"type": "text", "text": "Bulletin line for smoke test"}]],
+    }
+    send_entry = dict(entry)
+    subj = _build_subject("NEW_DATE", entry["date_raw"])
+    tldr_norm = normalize_tldr("- first tldr point\n- second tldr point")
+    assert tldr_norm is not None
+    preview = _preview_text(subj, entry["date_raw"], tldr_norm, None)
+    props = _react_email_props("NEW_DATE", send_entry, tldr_norm, preview)
+    assert props["promoText"] is not None
+    html = _render_news_email_html_subprocess(props)
+    assert html is not None
+    low = html.lower()
+    assert "ffb8b8" in low
+    assert "smoke_promo_unique" in low
+    assert "thinkex.app" in low
+    assert "sent by madhav" in low
+    idx_coral = low.find("ffb8b8")
+    idx_bulletin = low.find("bulletin line for smoke test")
+    idx_promo = low.find("smoke_promo_unique")
+    idx_link = low.find("thinkex.app")
+    idx_footer = low.find("sent by madhav")
+    assert idx_coral < idx_bulletin < idx_promo < idx_link < idx_footer

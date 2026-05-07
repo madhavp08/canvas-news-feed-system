@@ -15,4 +15,6 @@ export type NewsFeedEmailProps = {
   items: ItemSegment[][];
   tldr: TldrNormalized | null;
   previewText: string;
+  /** Optional promo line from EMAIL_PROMO_TEXT; null to omit the callout */
+  promoText: string | null;
 };

@@ -48,6 +48,9 @@ _MIN_EMAIL_HTML_CHARS = 80
 _HTML_SUSPECT_PLAIN_MIN = 400
 _HTML_SUSPECT_MAX = 150
 
+# Promo line in notification emails (http/https linkified; no raw HTML from .env).
+_PROMO_HTTP_URL_RE = re.compile(r"(https?://[^\s]+)", re.IGNORECASE)
+
 
 def _strip_bom(s: str) -> str:
     if s.startswith("\ufeff"):
@@ -458,6 +461,7 @@ def _react_email_props(
         "items": normalized,
         "tldr": tldr_norm,
         "previewText": preview_text,
+        "promoText": _email_promo_text(),
     }
 
 
@@ -473,7 +477,15 @@ def _prepend_tldr_html(html_body: str, tldr: str) -> str:
     if not trimmed:
         return html_body
     esc = _escape_html(trimmed).replace("\n", "<br>\n")
-    return f"<p><strong>TL;DR:</strong><br>{esc}</p>{html_body}"
+    card = (
+        "<div style='background-color:#FFB8B8;border:1px solid #E85C5C;"
+        "border-radius:8px;padding:16px 18px;margin:0 0 24px;"
+        "font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:21px;color:#1a1d24;'>"
+        "<p style='margin:0 0 8px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;"
+        "color:#5a1f1f;font-weight:600;'>TL;DR</p>"
+        f"<p style='margin:0;'>{esc}</p></div>"
+    )
+    return f"{card}{html_body}"
 
 
 class NotifyError(Exception):
@@ -514,8 +526,10 @@ def _build_html_body(change_type: str, newest_entry: dict) -> str:
         header = f"The announcement for <strong>{date}</strong> was edited. Current content:"
 
     li_items = "\n".join(f"<li>{_segments_to_li_inner_html(line)}</li>" for line in items)
+    promo = _legacy_promo_callout_html()
     return (
         f"<p>{header}</p><ol>{li_items}</ol>"
+        f"{promo}"
         f"<hr><p style='color:#888;font-size:12px;'>Sent by Madhav's Canvas News Feed Monitor</p>"
     )
 
@@ -525,6 +539,48 @@ def _escape_html(text: str) -> str:
         text.replace("&", "&amp;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
+    )
+
+
+def _email_promo_text() -> str | None:
+    t = (os.environ.get("EMAIL_PROMO_TEXT") or "").strip()
+    return t if t else None
+
+
+def _append_promo_to_plain(body: str) -> str:
+    promo = _email_promo_text()
+    if not promo:
+        return body
+    return f"{body.rstrip()}\n\n---\n{promo}\n"
+
+
+def _linkify_promo_to_html(raw: str) -> str:
+    parts: list[str] = []
+    pos = 0
+    for m in _PROMO_HTTP_URL_RE.finditer(raw):
+        parts.append(_escape_html(raw[pos : m.start()]))
+        url = m.group(1)
+        if _legacy_link_href_ok(url):
+            parts.append(
+                f'<a href="{_escape_href_attr(url)}">{_escape_html(url)}</a>'
+            )
+        else:
+            parts.append(_escape_html(url))
+        pos = m.end()
+    parts.append(_escape_html(raw[pos:]))
+    return "".join(parts)
+
+
+def _legacy_promo_callout_html() -> str:
+    raw = _email_promo_text()
+    if not raw:
+        return ""
+    inner = _linkify_promo_to_html(raw)
+    return (
+        "<div style='border:1px solid #e2e6ef;border-radius:8px;padding:14px 16px;"
+        "margin:20px 0 0;background-color:#f9fafb;font-size:14px;line-height:21px;"
+        "color:#2b303a;font-family:Arial,Helvetica,sans-serif;'>"
+        f"{inner}</div>"
     )
 
 
@@ -660,9 +716,10 @@ def send_notification(
     """Send an email via SendGrid's HTTP API.
 
     Environment: SENDGRID_API_KEY, SENDGRID_FROM_EMAIL, NOTIFY_EMAILS
-    (comma-separated recipients). Optionally GEMINI_API_KEY (see .env.example) and
+    (comma-separated recipients).     Optionally GEMINI_API_KEY (see .env.example) and
     GEMINI_MODEL prepend a Gemini TL;DR; if Gemini is unavailable, the email sends
-    without it.
+    without it. Optional EMAIL_PROMO_TEXT adds a promo callout after the bulletin in
+    both MIME parts (http/https snippets are linked; otherwise text is escaped).
 
     HTML body is rendered with React Email (``email-render/``) when the CLI is
     available. Rendered HTML is normalized (leading non-HTML noise stripped) and
@@ -699,6 +756,7 @@ def send_notification(
     tldr_raw = _maybe_gemini_tldr(change_type, newest_entry)
     if tldr_raw:
         plain = _prepend_tldr_plain(plain, tldr_raw)
+    plain = _append_promo_to_plain(plain)
 
     tldr_norm = normalize_tldr(tldr_raw)
     preview = _preview_text(

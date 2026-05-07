@@ -12,6 +12,63 @@ import { Fragment } from "react";
 import { EmailSummaryCard } from "./EmailSummaryCard";
 import type { NewsFeedEmailProps, ItemSegment } from "./types";
 
+const PROMO_URL_SPLIT = /(https?:\/\/[^\s]+)/gi;
+
+function promoHrefAllowed(href: string): boolean {
+  const lc = href.trim().toLowerCase();
+  return lc.startsWith("https://") || lc.startsWith("http://");
+}
+
+function PromoLinkified({ text }: { text: string }) {
+  const chunks = text.split(PROMO_URL_SPLIT).filter((c) => c.length > 0);
+  return (
+    <>
+      {chunks.map((chunk, i) =>
+        /^https?:\/\//i.test(chunk) && promoHrefAllowed(chunk) ? (
+          <Link
+            key={i}
+            href={chunk.trim()}
+            style={{
+              color: "#0b57d0",
+              textDecoration: "underline",
+            }}
+          >
+            {chunk.trim()}
+          </Link>
+        ) : (
+          <Fragment key={i}>{chunk}</Fragment>
+        ),
+      )}
+    </>
+  );
+}
+
+const promoBoxStyle = {
+  border: "1px solid #e2e6ef",
+  borderRadius: "8px",
+  padding: "14px 16px",
+  margin: "20px 0 0",
+  backgroundColor: "#f9fafb",
+} as const;
+
+function PromoCallout({ promoText }: { promoText: string }) {
+  return (
+    <Section style={promoBoxStyle}>
+      <Text
+        style={{
+          margin: 0,
+          fontSize: "14px",
+          lineHeight: "21px",
+          color: "#2b303a",
+          fontFamily: "Arial, Helvetica, sans-serif",
+        }}
+      >
+        <PromoLinkified text={promoText} />
+      </Text>
+    </Section>
+  );
+}
+
 function BulletLine(props: { index: number; segments: ItemSegment[] }) {
   const { index, segments } = props;
 
@@ -53,6 +110,7 @@ export function NewsFeedEmail({
   items,
   tldr,
   previewText,
+  promoText,
 }: NewsFeedEmailProps) {
   const header =
     changeType === "NEW_DATE"
@@ -103,6 +161,7 @@ export function NewsFeedEmail({
           {items.map((segments, i) => (
             <BulletLine key={i} index={i} segments={segments} />
           ))}
+          {promoText ? <PromoCallout promoText={promoText} /> : null}
           <Hr style={{ borderColor: "#e5e7eb", margin: "28px 0 16px" }} />
           <Text style={{ color: "#888888", fontSize: "12px", margin: 0 }}>
             Sent by Madhav&apos;s Canvas News Feed Monitor

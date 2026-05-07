@@ -2,8 +2,8 @@ import { Section, Text } from "@react-email/components";
 import type { TldrNormalized } from "./types";
 
 const cardStyle = {
-  backgroundColor: "#f4f6fb",
-  border: "1px solid #e2e6ef",
+  backgroundColor: "#FFB8B8",
+  border: "1px solid #E85C5C",
   borderRadius: "8px",
   padding: "16px 18px",
   margin: "0 0 24px",
@@ -13,7 +13,7 @@ const eyebrowStyle = {
   fontSize: "11px",
   letterSpacing: "0.08em",
   textTransform: "uppercase" as const,
-  color: "#5c6578",
+  color: "#5a1f1f",
   margin: "0 0 8px",
   fontFamily: "Arial, Helvetica, sans-serif",
 } as const;
@@ -30,7 +30,7 @@ const leadStyle = {
 const lineStyle = {
   fontSize: "14px",
   lineHeight: "21px",
-  color: "#2b303a",
+  color: "#1a1d24",
   margin: "0 0 6px",
   fontFamily: "Arial, Helvetica, sans-serif",
 } as const;

@@ -44,6 +44,7 @@ _DOTENV_OVERRIDE_KEYS = frozenset(
         "BROWSER",
         "POLL_INTERVAL",
         "SKIP_REACT_EMAIL_HTML",
+        "EMAIL_PROMO_TEXT",
     }
 )
 
