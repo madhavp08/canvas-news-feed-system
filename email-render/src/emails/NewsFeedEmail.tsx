@@ -20,7 +20,14 @@ function promoHrefAllowed(href: string): boolean {
   return lc.startsWith("https://") || lc.startsWith("http://");
 }
 
-function PromoLinkified({ text }: { text: string }) {
+/** When *ctaHref* is set, every URL chunk links there (single CTA); labels stay the matched text. */
+function PromoLinkified({
+  text,
+  ctaHref,
+}: {
+  text: string;
+  ctaHref: string | null;
+}) {
   const chunks = text.split(PROMO_URL_SPLIT).filter((c) => c.length > 0);
   return (
     <>
@@ -28,7 +35,9 @@ function PromoLinkified({ text }: { text: string }) {
         /^https?:\/\//i.test(chunk) && promoHrefAllowed(chunk) ? (
           <Link
             key={i}
-            href={chunk.trim()}
+            href={
+              ctaHref && promoHrefAllowed(ctaHref) ? ctaHref : chunk.trim()
+            }
             style={{
               color: "#0b57d0",
               textDecoration: "underline",
@@ -121,7 +130,7 @@ function PromoCallout({
           fontFamily: "Arial, Helvetica, sans-serif",
         }}
       >
-        <PromoLinkified text={promoText} />
+        <PromoLinkified text={promoText} ctaHref={promoLinkHref} />
       </Text>
     </Section>
   );

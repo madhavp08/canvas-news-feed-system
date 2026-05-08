@@ -18,6 +18,7 @@ from notifier import (
     _preview_text,
     _react_email_props,
     _render_news_email_html_subprocess,
+    _linkify_promo_to_html,
     normalize_tldr,
     send_notification,
 )
@@ -299,6 +300,11 @@ def test_react_email_props_promo_text_without_url(monkeypatch):
     assert props["promoText"] == "Plain promo, no hyperlink"
     assert props["promoLogoUrl"] is not None
     assert props["promoLinkHref"] is None
+    out = _build_html_body("NEW_DATE", {**entry, "items": [[{"type": "text", "text": "y"}]]})
+    idx = out.find("promo-callout")
+    assert idx >= 0
+    chunk = out[idx : idx + 1200]
+    assert "<a " not in chunk
 
 
 def test_legacy_html_promo_escaped_and_linkified(monkeypatch):
@@ -315,6 +321,42 @@ def test_legacy_html_promo_escaped_and_linkified(monkeypatch):
     assert 'href="https://example.com/foo"' in html
     assert "newlogothinkex-light.svg" in html
     assert "promo-logo-chip" in html
+
+
+def test_linkify_promo_unified_cta_multiple_urls():
+    raw = "See https://a.example/first and https://b.example/second end"
+    cta = "https://a.example/first"
+    out = _linkify_promo_to_html(raw, cta)
+    assert 'href="https://a.example/first"' in out
+    assert 'href="https://b.example/second"' not in out
+    assert "https://b.example/second" in out
+
+
+def test_linkify_promo_no_unified_keeps_per_url_hrefs():
+    raw = "See https://a.example/first and https://b.example/second end"
+    out = _linkify_promo_to_html(raw, None)
+    assert 'href="https://a.example/first"' in out
+    assert 'href="https://b.example/second"' in out
+
+
+def test_legacy_html_promo_two_urls_single_cta(monkeypatch):
+    monkeypatch.setenv(
+        "EMAIL_PROMO_TEXT",
+        "Try https://a.example/first then https://b.example/second done",
+    )
+    monkeypatch.setenv(
+        "EMAIL_PROMO_LOGO_URL",
+        "https://cdn.example.com/only-logo.png",
+    )
+    entry = {
+        "date_raw": "Tuesday, May 5",
+        "items": [[{"type": "text", "text": "one"}]],
+    }
+    html = _build_html_body("NEW_DATE", entry)
+    assert html.count('href="https://a.example/first"') == 2
+    assert 'href="https://b.example/second"' not in html
+    assert "https://b.example/second" in html
+    assert "only-logo.png" in html
 
 
 def test_append_promo_to_plain(monkeypatch):

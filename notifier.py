@@ -596,15 +596,22 @@ def _append_promo_to_plain(body: str) -> str:
     return f"{body.rstrip()}\n\n---\n{promo}\n"
 
 
-def _linkify_promo_to_html(raw: str) -> str:
+def _linkify_promo_to_html(raw: str, cta_href: str | None = None) -> str:
+    """Linkify http(s) spans. When *cta_href* is safe, every anchor uses it (single CTA).
+
+    If *raw* lists several URLs, *cta_href* should be the first match from
+    `_first_promo_http_url` so every visible link shares one destination.
+    """
     parts: list[str] = []
     pos = 0
+    unified = cta_href if cta_href and _legacy_link_href_ok(cta_href) else None
     for m in _PROMO_HTTP_URL_RE.finditer(raw):
         parts.append(_escape_html(raw[pos : m.start()]))
         url = m.group(1)
         if _legacy_link_href_ok(url):
+            target = unified if unified is not None else url
             parts.append(
-                f'<a href="{_escape_href_attr(url)}">{_escape_html(url)}</a>'
+                f'<a href="{_escape_href_attr(target)}">{_escape_html(url)}</a>'
             )
         else:
             parts.append(_escape_html(url))
@@ -617,9 +624,9 @@ def _legacy_promo_callout_html() -> str:
     raw = _email_promo_text()
     if not raw:
         return ""
-    inner = _linkify_promo_to_html(raw)
-    logo_url = _email_promo_logo_url()
     promo_link = _first_promo_http_url(raw)
+    inner = _linkify_promo_to_html(raw, promo_link)
+    logo_url = _email_promo_logo_url()
     logo_block = ""
     if logo_url:
         esc_src = _escape_href_attr(logo_url)

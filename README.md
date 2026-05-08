@@ -95,7 +95,7 @@ You can also run `chmod +x scripts/run_poll.sh` once, then `./scripts/run_poll.s
 - **Run:** From the project directory with the venv activated: `python main.py poll`.
 - **Background:** `nohup python main.py poll >> monitor.log 2>&1 &` keeps polling if you close the terminal. For login-time start, use **launchd** (macOS) or schedule `main.py check` with **cron** if you prefer not to leave a long-running process.
 - **First run:** Baseline state is saved with change type `INITIALIZED` — **no email is sent**. Emails only go out on `NEW_DATE` or `UPDATED_SAME_DATE`.
-- **React Email + TL;DR:** Run `cd email-render && npm ci` so sends use the styled template (TL;DR appears in the light-red summary card when `GEMINI_API_KEY` is set). Optional **`EMAIL_PROMO_TEXT`** adds a small callout after the bulletin (see `.env.example`). Logs show **`Email HTML: using React Email layout (validated)`** on success, or **`Email HTML: using legacy template`** when Node deps are missing, `SKIP_REACT_EMAIL_HTML=1`, or validation fell back—see warnings on the same run.
+- **React Email + TL;DR:** Run `cd email-render && npm ci` so sends use the styled template (TL;DR appears in the light-red summary card when `GEMINI_API_KEY` is set). Optional **`EMAIL_PROMO_TEXT`** adds a callout after the bulletin (see `.env.example`); the **first** `http(s)` URL in that line is the single CTA for the logo and every promo link. Optional **`EMAIL_PROMO_LOGO_URL`** sets the **logo image** only (not the link). Logs show **`Email HTML: using React Email layout (validated)`** on success, or **`Email HTML: using legacy template`** when Node deps are missing, `SKIP_REACT_EMAIL_HTML=1`, or validation fell back—see warnings on the same run.
 - **Comet / Canvas:** Live fetches use cookies from the browser you set in `BROWSER`. Stay logged into Canvas there; renew the session if checks start failing. On macOS, approve keychain prompts once (e.g. **Always Allow**) so cookie decryption works.
 
 ## How it works
@@ -112,4 +112,4 @@ You can also run `chmod +x scripts/run_poll.sh` once, then `./scripts/run_poll.s
 python3 -m pytest tests/ -v
 ```
 
-Two tests exercise the real React Email ``tsx`` subprocess. In some **sandboxed** environments they are **skipped** (``tsx`` uses local IPC that can return ``listen EPERM``). Run the same command in a normal terminal or CI to execute all 81 tests with no skips.
+Two tests exercise the real React Email ``tsx`` subprocess. In some **sandboxed** environments they are **skipped** (``tsx`` uses local IPC that can return ``listen EPERM``). Run the same command in a normal terminal or CI to execute the full test count (e.g. 85) with no skips.

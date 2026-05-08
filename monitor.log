@@ -13,3 +13,16 @@
     color: #2E2F30;
     text-align: center;
 2026-05-07 20:07:34 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-07 21:17:50 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-07 21:17:50 canvas_monitor ERROR  Check failed (will retry next cycle): Canvas API returned HTTP 503: <!DOCTYPE html>
+<html>
+<head>
+  <title>Down for Maintenance</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  body {
+    color: #2E2F30;
+    text-align: center;
+2026-05-07 21:17:50 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-07 21:43:03 canvas_monitor INFO  Received signal 15, shutting down after current cycle...
+2026-05-07 21:43:04 canvas_monitor INFO  Poll loop stopped.
