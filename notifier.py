@@ -51,6 +51,12 @@ _HTML_SUSPECT_MAX = 150
 # Promo line in notification emails (http/https linkified; no raw HTML from .env).
 _PROMO_HTTP_URL_RE = re.compile(r"(https?://[^\s]+)", re.IGNORECASE)
 
+# Default Thinkex mark for the promo callout (override with EMAIL_PROMO_LOGO_URL).
+_DEFAULT_EMAIL_PROMO_LOGO_URL = (
+    "https://www.thinkex.app/newlogothinkex-light.svg"
+    "?dpl=dpl_5pcR8SVvBXLpbshQqofsNskgGwtd"
+)
+
 
 def _strip_bom(s: str) -> str:
     if s.startswith("\ufeff"):
@@ -333,6 +339,18 @@ def _render_news_email_html_subprocess(props: dict) -> str | None:
 
     cli = email_dir / "src" / "render-cli.tsx"
     cmd = [str(tsx), str(cli)]
+    # tsx uses a pipe under $TMPDIR; use a project-local dir so sandboxed/locked-down
+    # environments (and CI) don't hit EPERM on OS temp listen.
+    tsx_tmp = email_dir / ".tsx-tmp"
+    child_env = os.environ.copy()
+    try:
+        tsx_tmp.mkdir(parents=True, exist_ok=True)
+        tmp_s = str(tsx_tmp)
+        child_env["TMPDIR"] = tmp_s
+        child_env["TMP"] = tmp_s
+        child_env["TEMP"] = tmp_s
+    except OSError:
+        pass
     try:
         proc = subprocess.run(
             cmd,
@@ -341,6 +359,7 @@ def _render_news_email_html_subprocess(props: dict) -> str | None:
             text=True,
             timeout=_REACT_EMAIL_RENDER_TIMEOUT,
             cwd=str(email_dir),
+            env=child_env,
             check=False,
         )
     except subprocess.TimeoutExpired:
@@ -455,13 +474,18 @@ def _react_email_props(
         "NEW_DATE" if change_type == "NEW_DATE" else "UPDATED_SAME_DATE"
     )
     normalized = _normalize_entry_items(newest_entry["items"])
+    promo_text = _email_promo_text()
+    promo_logo = _email_promo_logo_url()
+    promo_link = _first_promo_http_url(promo_text) if promo_text else None
     return {
         "changeType": template_ct,
         "dateRaw": newest_entry["date_raw"],
         "items": normalized,
         "tldr": tldr_norm,
         "previewText": preview_text,
-        "promoText": _email_promo_text(),
+        "promoText": promo_text,
+        "promoLogoUrl": promo_logo,
+        "promoLinkHref": promo_link,
     }
 
 
@@ -547,6 +571,24 @@ def _email_promo_text() -> str | None:
     return t if t else None
 
 
+def _email_promo_logo_url() -> str | None:
+    """Return promo logo image URL when ``EMAIL_PROMO_TEXT`` is set; else ``None``."""
+    if not _email_promo_text():
+        return None
+    custom = (os.environ.get("EMAIL_PROMO_LOGO_URL") or "").strip()
+    if custom:
+        return custom
+    return _DEFAULT_EMAIL_PROMO_LOGO_URL
+
+
+def _first_promo_http_url(raw: str) -> str | None:
+    m = _PROMO_HTTP_URL_RE.search(raw)
+    if not m:
+        return None
+    u = m.group(1)
+    return u if _legacy_link_href_ok(u) else None
+
+
 def _append_promo_to_plain(body: str) -> str:
     promo = _email_promo_text()
     if not promo:
@@ -576,11 +618,35 @@ def _legacy_promo_callout_html() -> str:
     if not raw:
         return ""
     inner = _linkify_promo_to_html(raw)
+    logo_url = _email_promo_logo_url()
+    promo_link = _first_promo_http_url(raw)
+    logo_block = ""
+    if logo_url:
+        esc_src = _escape_href_attr(logo_url)
+        chip = (
+            "<div class='promo-logo-chip' style='display:inline-block;margin:0 0 12px;"
+            "padding:10px 14px;border-radius:8px;background-color:#252a33;"
+            "border:1px solid #3d4553;text-align:center;'>"
+        )
+        img = (
+            "<img src='"
+            f"{esc_src}"
+            "' alt='Thinkex' width='132' height='36' style='display:block;"
+            "width:132px;height:auto;border:0;outline:none;'/>"
+        )
+        if promo_link:
+            esc_href = _escape_href_attr(promo_link)
+            logo_block = (
+                f"{chip}<a href='{esc_href}' style='text-decoration:none;"
+                f"border:none;'>{img}</a></div>"
+            )
+        else:
+            logo_block = f"{chip}{img}</div>"
     return (
-        "<div style='border:1px solid #e2e6ef;border-radius:8px;padding:14px 16px;"
-        "margin:20px 0 0;background-color:#f9fafb;font-size:14px;line-height:21px;"
-        "color:#2b303a;font-family:Arial,Helvetica,sans-serif;'>"
-        f"{inner}</div>"
+        "<div class='promo-callout' style='border:1px solid #e2e6ef;border-radius:10px;"
+        "padding:18px 18px;margin:20px 0 0;background-color:#f9fafb;font-size:14px;"
+        "line-height:21px;color:#2b303a;font-family:Arial,Helvetica,sans-serif;'>"
+        f"{logo_block}{inner}</div>"
     )
 
 

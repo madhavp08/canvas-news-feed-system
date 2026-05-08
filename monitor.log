@@ -1,26 +1,15 @@
-2026-05-07 15:58:00 canvas_monitor INFO  .env overrides shell for: BROWSER, CANVAS_COURSE_URL, EMAIL_PROMO_TEXT, GEMINI_API_KEY, GEMINI_MODEL, NOTIFY_EMAILS, POLL_INTERVAL, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
-2026-05-07 15:58:00 canvas_monitor INFO  Starting poll loop: interval=900s, url=https://umd.instructure.com/courses/1398395, browser=comet
-2026-05-07 15:58:00 canvas_monitor INFO  React Email CLI available — notifications will use the styled template when validation succeeds (see per-send logs)
-2026-05-07 15:58:00 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
-2026-05-07 15:58:00 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
-2026-05-07 15:58:00 fetcher INFO  Fetched front page via API (90441 bytes, 230.4 ms)
-2026-05-07 15:58:00 parser INFO  Parsed 36 News Feed entries; newest date: 'Thursday, May 7' (2 items)
-2026-05-07 15:58:00 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 7', checked_at=2026-05-07T15:55:01.510823-04:00
-2026-05-07 15:58:00 canvas_monitor INFO  Check result: {
-  "change_type": "NO_CHANGE",
-  "newest_date": "Thursday, May 7",
-  "newest_items_count": 2,
-  "total_entries_parsed": 36
-}
-2026-05-07 15:58:00 canvas_monitor INFO  Sleeping 900 seconds until next check...
-2026-05-07 16:15:07 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
-2026-05-07 16:15:07 fetcher INFO  Fetched front page via API (90441 bytes, 309.9 ms)
-2026-05-07 16:15:07 parser INFO  Parsed 36 News Feed entries; newest date: 'Thursday, May 7' (2 items)
-2026-05-07 16:15:07 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 7', checked_at=2026-05-07T15:55:01.510823-04:00
-2026-05-07 16:15:07 canvas_monitor INFO  Check result: {
-  "change_type": "NO_CHANGE",
-  "newest_date": "Thursday, May 7",
-  "newest_items_count": 2,
-  "total_entries_parsed": 36
-}
-2026-05-07 16:15:07 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-07 20:07:34 canvas_monitor INFO  .env overrides shell for: BROWSER, CANVAS_COURSE_URL, EMAIL_PROMO_TEXT, GEMINI_API_KEY, GEMINI_MODEL, NOTIFY_EMAILS, POLL_INTERVAL, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
+2026-05-07 20:07:34 canvas_monitor INFO  Starting poll loop: interval=900s, url=https://umd.instructure.com/courses/1398395, browser=comet
+2026-05-07 20:07:34 canvas_monitor INFO  React Email CLI available — notifications will use the styled template when validation succeeds (see per-send logs)
+2026-05-07 20:07:34 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-07 20:07:34 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-07 20:07:34 canvas_monitor ERROR  Check failed (will retry next cycle): Canvas API returned HTTP 503: <!DOCTYPE html>
+<html>
+<head>
+  <title>Down for Maintenance</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  body {
+    color: #2E2F30;
+    text-align: center;
+2026-05-07 20:07:34 canvas_monitor INFO  Sleeping 900 seconds until next check...

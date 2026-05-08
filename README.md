@@ -43,7 +43,7 @@ You'll need:
 - A **verified sender** email address in SendGrid
 - The email addresses of your classmates to notify
 
-**Precedence:** For API keys, `NOTIFY_EMAILS`, `CANVAS_COURSE_URL`, `BROWSER`, `POLL_INTERVAL`, `GEMINI_MODEL`, `SKIP_REACT_EMAIL_HTML`, `EMAIL_PROMO_TEXT`, **values in `.env` override** anything exported in your shell once the process starts. Other `.env` entries use “set if missing” semantics (shell wins if already set).
+**Precedence:** For API keys, `NOTIFY_EMAILS`, `CANVAS_COURSE_URL`, `BROWSER`, `POLL_INTERVAL`, `GEMINI_MODEL`, `SKIP_REACT_EMAIL_HTML`, `EMAIL_PROMO_TEXT`, `EMAIL_PROMO_LOGO_URL`, **values in `.env` override** anything exported in your shell once the process starts. Other `.env` entries use “set if missing” semantics (shell wins if already set).
 
 ## Usage
 
@@ -111,3 +111,5 @@ You can also run `chmod +x scripts/run_poll.sh` once, then `./scripts/run_poll.s
 ```bash
 python3 -m pytest tests/ -v
 ```
+
+Two tests exercise the real React Email ``tsx`` subprocess. In some **sandboxed** environments they are **skipped** (``tsx`` uses local IPC that can return ``listen EPERM``). Run the same command in a normal terminal or CI to execute all 81 tests with no skips.

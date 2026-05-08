@@ -1,5 +1,6 @@
 .venv/
 node_modules/
+email-render/.tsx-tmp/
 __pycache__/
 *.pyc
 .pytest_cache/

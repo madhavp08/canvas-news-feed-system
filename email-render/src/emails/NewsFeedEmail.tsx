@@ -4,6 +4,7 @@ import {
   Head,
   Hr,
   Html,
+  Img,
   Link,
   Section,
   Text,
@@ -45,16 +46,73 @@ function PromoLinkified({ text }: { text: string }) {
 
 const promoBoxStyle = {
   border: "1px solid #e2e6ef",
-  borderRadius: "8px",
-  padding: "14px 16px",
+  borderRadius: "10px",
+  padding: "18px 18px",
   margin: "20px 0 0",
   backgroundColor: "#f9fafb",
 } as const;
 
-function PromoCallout({ promoText }: { promoText: string }) {
+const promoLogoChipStyle = {
+  display: "inline-block",
+  marginBottom: "12px",
+  padding: "10px 14px",
+  borderRadius: "8px",
+  backgroundColor: "#252a33",
+  border: "1px solid #3d4553",
+  textAlign: "center" as const,
+};
+
+function PromoCallout({
+  promoText,
+  promoLogoUrl,
+  promoLinkHref,
+}: {
+  promoText: string;
+  promoLogoUrl: string | null;
+  promoLinkHref: string | null;
+}) {
   return (
-    <Section style={promoBoxStyle}>
+    <Section className="promo-callout" style={promoBoxStyle}>
+      {promoLogoUrl ? (
+        <Section style={promoLogoChipStyle} className="promo-logo-chip">
+          {promoLinkHref ? (
+            <Link
+              href={promoLinkHref}
+              style={{ textDecoration: "none", border: "none" }}
+            >
+              <Img
+                src={promoLogoUrl}
+                alt="Thinkex"
+                width={132}
+                height={36}
+                style={{
+                  display: "block",
+                  width: "132px",
+                  height: "auto",
+                  border: 0,
+                  outline: "none",
+                }}
+              />
+            </Link>
+          ) : (
+            <Img
+              src={promoLogoUrl}
+              alt="Thinkex"
+              width={132}
+              height={36}
+              style={{
+                display: "block",
+                width: "132px",
+                height: "auto",
+                border: 0,
+                outline: "none",
+              }}
+            />
+          )}
+        </Section>
+      ) : null}
       <Text
+        className="promo-text"
         style={{
           margin: 0,
           fontSize: "14px",
@@ -111,6 +169,8 @@ export function NewsFeedEmail({
   tldr,
   previewText,
   promoText,
+  promoLogoUrl,
+  promoLinkHref,
 }: NewsFeedEmailProps) {
   const header =
     changeType === "NEW_DATE"
@@ -119,7 +179,25 @@ export function NewsFeedEmail({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>
+          {`
+            @media (prefers-color-scheme: dark) {
+              .promo-callout {
+                background-color: #1a1d24 !important;
+                border-color: #3d4450 !important;
+              }
+              .promo-logo-chip {
+                background-color: #0f1218 !important;
+                border-color: #5c6578 !important;
+              }
+              .promo-text {
+                color: #e8eaed !important;
+              }
+            }
+          `}
+        </style>
+      </Head>
       <Body
         style={{
           margin: 0,
@@ -161,7 +239,13 @@ export function NewsFeedEmail({
           {items.map((segments, i) => (
             <BulletLine key={i} index={i} segments={segments} />
           ))}
-          {promoText ? <PromoCallout promoText={promoText} /> : null}
+          {promoText ? (
+            <PromoCallout
+              promoText={promoText}
+              promoLogoUrl={promoLogoUrl}
+              promoLinkHref={promoLinkHref}
+            />
+          ) : null}
           <Hr style={{ borderColor: "#e5e7eb", margin: "28px 0 16px" }} />
           <Text style={{ color: "#888888", fontSize: "12px", margin: 0 }}>
             Sent by Madhav&apos;s Canvas News Feed Monitor

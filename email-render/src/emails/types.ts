@@ -17,4 +17,8 @@ export type NewsFeedEmailProps = {
   previewText: string;
   /** Optional promo line from EMAIL_PROMO_TEXT; null to omit the callout */
   promoText: string | null;
+  /** First http(s) URL from promo text; used as logo link target */
+  promoLinkHref: string | null;
+  /** Promo logo image URL when EMAIL_PROMO_TEXT is set (EMAIL_PROMO_LOGO_URL or default) */
+  promoLogoUrl: string | null;
 };

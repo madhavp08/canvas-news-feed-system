@@ -3,8 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from pathlib import Path
+import re
 
 from notifier import (
     NotifyError,
@@ -27,6 +26,7 @@ from notifier import (
 @pytest.fixture(autouse=True)
 def _clear_promo_email_env(monkeypatch):
     monkeypatch.delenv("EMAIL_PROMO_TEXT", raising=False)
+    monkeypatch.delenv("EMAIL_PROMO_LOGO_URL", raising=False)
 
 
 def _sample_entry():
@@ -158,6 +158,8 @@ def test_injected_react_html_used_without_legacy_tldr_prefix(mock_post):
         assert props["changeType"] == "NEW_DATE"
         assert props["tldr"] is None
         assert props["promoText"] is None
+        assert props["promoLogoUrl"] is None
+        assert props["promoLinkHref"] is None
         d = props["dateRaw"]
         return f"<html><body>{d} Announcement A</body></html>"
 
@@ -258,6 +260,8 @@ def test_react_email_props_promo_null(monkeypatch):
     preview = _preview_text(subj, entry["date_raw"], None, None)
     props = _react_email_props("NEW_DATE", entry, None, preview)
     assert props["promoText"] is None
+    assert props["promoLogoUrl"] is None
+    assert props["promoLinkHref"] is None
 
 
 def test_react_email_props_promo_from_env(monkeypatch):
@@ -269,6 +273,32 @@ def test_react_email_props_promo_from_env(monkeypatch):
     preview = _preview_text(subj, entry["date_raw"], None, None)
     props = _react_email_props("NEW_DATE", entry, None, preview)
     assert props["promoText"] == "Try https://www.thinkex.app/home"
+    assert props["promoLogoUrl"] is not None
+    assert props["promoLogoUrl"].endswith("skgGwtd")
+    assert "thinkex.app/newlogothinkex-light.svg" in props["promoLogoUrl"]
+    assert props["promoLinkHref"] == "https://www.thinkex.app/home"
+
+
+def test_react_email_props_promo_logo_override(monkeypatch):
+    monkeypatch.setenv("EMAIL_PROMO_TEXT", "Go https://example.com/promo")
+    monkeypatch.setenv("EMAIL_PROMO_LOGO_URL", "https://cdn.example.com/logo.png")
+    entry = {"date_raw": "Monday", "items": ["x"]}
+    subj = _build_subject("NEW_DATE", entry["date_raw"])
+    preview = _preview_text(subj, entry["date_raw"], None, None)
+    props = _react_email_props("NEW_DATE", entry, None, preview)
+    assert props["promoLogoUrl"] == "https://cdn.example.com/logo.png"
+    assert props["promoLinkHref"] == "https://example.com/promo"
+
+
+def test_react_email_props_promo_text_without_url(monkeypatch):
+    monkeypatch.setenv("EMAIL_PROMO_TEXT", "  Plain promo, no hyperlink  ")
+    entry = {"date_raw": "Monday", "items": ["x"]}
+    subj = _build_subject("NEW_DATE", entry["date_raw"])
+    preview = _preview_text(subj, entry["date_raw"], None, None)
+    props = _react_email_props("NEW_DATE", entry, None, preview)
+    assert props["promoText"] == "Plain promo, no hyperlink"
+    assert props["promoLogoUrl"] is not None
+    assert props["promoLinkHref"] is None
 
 
 def test_legacy_html_promo_escaped_and_linkified(monkeypatch):
@@ -283,6 +313,8 @@ def test_legacy_html_promo_escaped_and_linkified(monkeypatch):
     assert "Sent by Madhav's Canvas News Feed Monitor" in html
     assert "&amp;lt;x&amp;gt;" in html
     assert 'href="https://example.com/foo"' in html
+    assert "newlogothinkex-light.svg" in html
+    assert "promo-logo-chip" in html
 
 
 def test_append_promo_to_plain(monkeypatch):
@@ -362,20 +394,7 @@ def test_send_notification_falls_back_when_react_stub_incomplete(
     assert "Announcement A" in html
 
 
-def _tsx_bin() -> Path:
-    import notifier
-
-    return (
-        Path(notifier.__file__).resolve().parent
-        / "email-render"
-        / "node_modules"
-        / ".bin"
-        / "tsx"
-    )
-
-
-@pytest.mark.skipif(not _tsx_bin().exists(), reason="email-render tsx not installed")
-def test_subprocess_react_email_passes_content_checks():
+def test_subprocess_react_email_passes_content_checks(require_react_email_subprocess):
     entry = {
         "date_raw": "Tuesday, May 5",
         "items": [
@@ -409,8 +428,9 @@ def test_subprocess_react_email_passes_content_checks():
     assert "Example link" in html
 
 
-@pytest.mark.skipif(not _tsx_bin().exists(), reason="email-render tsx not installed")
-def test_subprocess_react_email_promo_before_footer(monkeypatch):
+def test_subprocess_react_email_promo_before_footer(
+    monkeypatch, require_react_email_subprocess
+):
     """Smoke: TL;DR card (#FFB8B8), bulletin, promo callout with link, divider, attribution."""
     monkeypatch.setenv(
         "EMAIL_PROMO_TEXT",
@@ -433,10 +453,11 @@ def test_subprocess_react_email_promo_before_footer(monkeypatch):
     assert "ffb8b8" in low
     assert "smoke_promo_unique" in low
     assert "thinkex.app" in low
+    assert "newlogothinkex-light" in low
     assert "sent by madhav" in low
-    idx_coral = low.find("ffb8b8")
-    idx_bulletin = low.find("bulletin line for smoke test")
-    idx_promo = low.find("smoke_promo_unique")
-    idx_link = low.find("thinkex.app")
-    idx_footer = low.find("sent by madhav")
-    assert idx_coral < idx_bulletin < idx_promo < idx_link < idx_footer
+    assert re.search(
+        r">tl;dr</p>.*?bulletin line for smoke test.*?smoke_promo_unique"
+        r".*?thinkex\.app/home.*?sent by madhav",
+        low,
+        re.DOTALL,
+    )
