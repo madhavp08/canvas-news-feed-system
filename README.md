@@ -12,7 +12,8 @@ A personal monitoring tool that detects new or edited announcements in a Canvas/
 | `state_store.py` | Reads/writes `state.json` with atomic file operations |
 | `notifier.py` | Sends email via SendGrid (`requests`); **HTML** is rendered with [React Email](https://react.email) in `email-render/` when Node deps are installed |
 | `email-render/` | Small Node + TypeScript package: React Email template + CLI that prints email-safe HTML to stdout (invoked by `notifier.py`) |
-| `main.py` | CLI with `check` (one-shot) and `poll` (continuous loop) modes |
+| `main.py` | CLI: `check`, `poll`, `send-from-state` (resend from `state.json`), `ad-feedback-serve` / `ad-feedback-stats` / `ad-feedback-chart` (promo taps) |
+| `ad_feedback_store.py` | SQLite persistence for optional “Was this ad helpful?” taps |
 
 ## Setup
 
@@ -43,7 +44,7 @@ You'll need:
 - A **verified sender** email address in SendGrid
 - The email addresses of your classmates to notify
 
-**Precedence:** For API keys, `NOTIFY_EMAILS`, `CANVAS_COURSE_URL`, `BROWSER`, `POLL_INTERVAL`, `GEMINI_MODEL`, `SKIP_REACT_EMAIL_HTML`, `EMAIL_PROMO_TEXT`, `EMAIL_PROMO_LOGO_URL`, **values in `.env` override** anything exported in your shell once the process starts. Other `.env` entries use “set if missing” semantics (shell wins if already set).
+**Precedence:** For keys including API secrets, notify list/course/browser/poll, `SKIP_REACT_EMAIL_HTML`, `EMAIL_PROMO_*`, `AD_FEEDBACK_PUBLIC_URL`, `AD_FEEDBACK_DB_PATH`, and model keys, **values in `.env` override** shell exports once the Python process loads the file at startup. Other `.env` lines use “set if missing” (shell wins if already set).
 
 ## Usage
 
@@ -89,13 +90,38 @@ Environment is read once at startup. After changing `.env`, **restart** a long�
 
 You can also run `chmod +x scripts/run_poll.sh` once, then `./scripts/run_poll.sh` (extra args pass through, e.g. `--interval 1800`). Handy for cron or a Terminal shortcut.
 
+### Resend mail from disk state
+
+To send **one more** notification with the **currently saved bulletin** in `state.json` (does not fetch Canvas that run)—useful after tweaking promo/feedback URLs or testing layout:
+
+```bash
+python main.py send-from-state
+```
+
+Uses `NOTIFY_EMAILS` from `.env`. Override recipients **for that send only**:
+
+```bash
+python main.py send-from-state --notify-email you@school.edu --notify-email friend@school.edu
+```
+
+If `last_change_type` is missing from state, pass `--change-type NEW_DATE` or `UPDATED_SAME_DATE`.
+
+### Optional: promo + ad feedback taps
+
+Optional **`EMAIL_PROMO_TEXT`** in `.env` appends a Thinkex-style promo strip with inline logo links (see `.env.example`). When **`AD_FEEDBACK_PUBLIC_URL`** is also set to an **HTTPS** base you control (typically **ngrok** forwarding **`python main.py ad-feedback-serve`** on port **8765**), the email includes a neutral “Was this ad helpful?” block (Yes / Meh / No links). **`AD_FEEDBACK_DB_PATH`** defaults to **`data/ad_feedback.sqlite`** relative to cwd.
+
+- **`python main.py ad-feedback-stats`** — ASCII tally in terminal (run after votes).
+- **`python main.py ad-feedback-chart`** — default HTML file avoids publishing vote totals; **`--full`** adds numeric bar breakdown (operators only).
+
+Thank-you **`/thanks`** after a tap is intentionally generic (**no totals** exposed to respondents). Restart **`poll`** whenever **`AD_FEEDBACK_PUBLIC_URL`** changes (free ngrok hostnames rotate when the tunnel restarts).
+
 ## Production checklist
 
 - **Config:** Fill `.env` from `.env.example`: `SENDGRID_API_KEY`, `SENDGRID_FROM_EMAIL` (verified in SendGrid), `NOTIFY_EMAILS` (comma-separated addresses; no spaces around commas is safest), `CANVAS_COURSE_URL`, and optionally `BROWSER` (e.g. `comet`) and `POLL_INTERVAL` (seconds; default `3600` = one hour).
 - **Run:** From the project directory with the venv activated: `python main.py poll`.
 - **Background:** `nohup python main.py poll >> monitor.log 2>&1 &` keeps polling if you close the terminal. For login-time start, use **launchd** (macOS) or schedule `main.py check` with **cron** if you prefer not to leave a long-running process.
 - **First run:** Baseline state is saved with change type `INITIALIZED` — **no email is sent**. Emails only go out on `NEW_DATE` or `UPDATED_SAME_DATE`.
-- **React Email + TL;DR:** Run `cd email-render && npm ci` so sends use the styled template (TL;DR appears in the light-red summary card when `GEMINI_API_KEY` is set). Optional **`EMAIL_PROMO_TEXT`** adds a callout after the bulletin (see `.env.example`); the **first** `http(s)` URL in that line is the single CTA for the logo and every promo link. Optional **`EMAIL_PROMO_LOGO_URL`** sets the **logo image** only (not the link). Logs show **`Email HTML: using React Email layout (validated)`** on success, or **`Email HTML: using legacy template`** when Node deps are missing, `SKIP_REACT_EMAIL_HTML=1`, or validation fell back—see warnings on the same run.
+- **React Email + TL;DR:** Run `cd email-render && npm ci` so sends use the styled template (TL;DR appears in the light-red summary card when `GEMINI_API_KEY` is set). Optional **`EMAIL_PROMO_TEXT`** adds a promo callout after the bulletin (see `.env.example`); the **first** `http(s)` URL in that line is the single CTA for the logo and every promo link. Optional **`EMAIL_PROMO_LOGO_URL`** sets the **logo image** only (not the link). Optional **`AD_FEEDBACK_PUBLIC_URL`** + **`python main.py ad-feedback-serve`** (and usually **ngrok**) enable the questionnaire links; tally with **`python main.py ad-feedback-stats`**. Logs show **`Email HTML: using React Email layout (validated)`** on success, or **`Email HTML: using legacy template`** when Node deps are missing, `SKIP_REACT_EMAIL_HTML=1`, or validation fell back—see warnings on the same run.
 - **Comet / Canvas:** Live fetches use cookies from the browser you set in `BROWSER`. Stay logged into Canvas there; renew the session if checks start failing. On macOS, approve keychain prompts once (e.g. **Always Allow**) so cookie decryption works.
 
 ## How it works
@@ -112,4 +138,4 @@ You can also run `chmod +x scripts/run_poll.sh` once, then `./scripts/run_poll.s
 python3 -m pytest tests/ -v
 ```
 
-Two tests exercise the real React Email ``tsx`` subprocess. In some **sandboxed** environments they are **skipped** (``tsx`` uses local IPC that can return ``listen EPERM``). Run the same command in a normal terminal or CI to execute the full test count (e.g. 85) with no skips.
+Two tests exercise the real React Email ``tsx`` subprocess. In some **sandboxed** environments they are **skipped** (``tsx`` uses local IPC that can return ``listen EPERM``). Run the same command in a normal terminal or CI to execute them with no skips.

@@ -261,10 +261,20 @@ def _fetch_front_page_with_cookies(
             resp = requests.get(
                 api_url,
                 cookies=cookies,
-                headers={"Accept": "application/json"},
+                headers={
+                    "Accept": "application/json",
+                    # Avoid long-lived pooled connections across multi-hour idle gaps
+                    # (NAT / sleep / flaky Wi‑Fi drops idle sockets; next poll may fail until retry).
+                    "Connection": "close",
+                },
                 timeout=30,
             )
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exc:
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+            requests.exceptions.ChunkedEncodingError,
+            requests.exceptions.ContentDecodingError,
+        ) as exc:
             n = transient_try + 1
             if n < _FETCH_TRANSIENT_ATTEMPTS:
                 delay = min(

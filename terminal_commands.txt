@@ -1,0 +1,141 @@
+# Canvas News Feed Monitor — quick command reference (same sample URLs as README).
+# Run everything from the project root unless noted.
+
+================================================================================
+1. Venv and deps (setup / occasional)
+================================================================================
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd email-render && npm ci && cd ..
+
+================================================================================
+2. One-shot check
+================================================================================
+
+# Live (uses browser cookies; set BROWSER in .env e.g. comet — stay logged into Canvas)
+python main.py check --url https://umd.instructure.com/courses/1398395
+
+# From saved HTML (no Canvas fetch)
+python main.py check --html-file 216HomePage.html
+
+# No emails this run
+python main.py check --url https://umd.instructure.com/courses/1398395 --no-notify
+
+# Override recipients for this run only (repeat --notify-email)
+python main.py check --url https://umd.instructure.com/courses/1398395 \
+  --notify-email you@example.com --notify-email friend@example.com
+
+================================================================================
+3. Continuous poll (foreground)
+================================================================================
+
+# Uses CANVAS_COURSE_URL and POLL_INTERVAL from .env
+python main.py poll
+
+# Overrides
+python main.py poll --url https://umd.instructure.com/courses/1398395 --interval 1800
+
+# Same as python main.py poll, but script cd's here and activates .venv first:
+chmod +x scripts/run_poll.sh
+./scripts/run_poll.sh
+./scripts/run_poll.sh --interval 1800
+
+# Foreground stop: Ctrl+C (current cycle finishes cleanly)
+
+================================================================================
+4. Resend mail from saved state (no Canvas fetch this run)
+================================================================================
+
+# One notification using bulletin data in state.json; recipients = NOTIFY_EMAILS in .env
+python main.py send-from-state
+
+# Same, but only these addresses this send (repeat --notify-email)
+python main.py send-from-state --notify-email you@example.com \
+  --notify-email friend@example.com
+
+# If state.json lacks a usable last_change_type, pin it explicitly:
+python main.py send-from-state --change-type NEW_DATE
+python main.py send-from-state --change-type UPDATED_SAME_DATE
+
+# Other state path
+python main.py send-from-state --state-file state.json -v
+
+# After editing .env (promo URLs, SENDGRID*, etc.), restart poll or use this fresh run.
+
+================================================================================
+5. Ad feedback (promo “Was this ad helpful?”) — votes + tally
+================================================================================
+# Requires EMAIL_PROMO_TEXT + AD_FEEDBACK_PUBLIC_URL set in .env (see .env.example).
+# Default DB: data/ad_feedback.sqlite (relative to cwd). Override AD_FEEDBACK_DB_PATH if needed.
+
+# Terminal 1 — record votes locally (must match ngrok target port below)
+python main.py ad-feedback-serve
+# Defaults: bind 127.0.0.1:8765  |  Override: python main.py ad-feedback-serve --port 8765 --host 0.0.0.0
+
+# Terminal 2 — public HTTPS tunnel to that port (paste Forwarding URL into AD_FEEDBACK_PUBLIC_URL)
+ngrok http 8765
+
+# Restart python main.py poll after changing AD_FEEDBACK_PUBLIC_URL so new emails embed the URL.
+
+# Tally votes (SQLite; reads .env for AD_FEEDBACK_DB_PATH)
+python main.py ad-feedback-stats
+
+# Minimal HTML pointers (no vote counts unless --full — do not publish --full outputs)
+python main.py ad-feedback-chart
+python main.py ad-feedback-chart --full -o ./ad-feedback-full.html && open ./ad-feedback-full.html
+
+================================================================================
+6. Background (nohup) + logs
+================================================================================
+
+# From project root with venv active — overwrite log each start:
+nohup python main.py poll > monitor.log 2>&1 &
+
+# Append to existing log:
+nohup python main.py poll >> monitor.log 2>&1 &
+
+# Or via helper script:
+nohup ./scripts/run_poll.sh >> monitor.log 2>&1 &
+
+# After editing .env (NOTIFY_EMAILS, keys, URLs, etc.): stop the running process,
+# then start nohup again — Python only reads env at process start.
+
+================================================================================
+7. Find the poll process
+================================================================================
+
+pgrep -fl "main.py poll"
+
+ps aux | grep "main.py poll" | grep -v grep
+
+# Inspect one PID:
+ps -p <PID> -o pid,command
+
+================================================================================
+8. Inspect logs
+================================================================================
+
+tail -f monitor.log
+
+tail -n 100 monitor.log
+
+================================================================================
+9. Stop the poller
+================================================================================
+
+# If you noted PID when starting ($!) or from pgrep/ps:
+kill <PID>
+
+# Or match by command line:
+pkill -f "python main.py poll"
+
+# Only if stubborn:
+kill -9 <PID>
+
+================================================================================
+10. Tests
+================================================================================
+
+python -m pytest tests/ -v

@@ -719,9 +719,9 @@ def _legacy_ad_feedback_html() -> str:
         return ""
     buttons = "".join(
         [
-            f"<a href='{hy}' style='{pill}'>Yes😃</a>",
-            f"<a href='{hm}' style='{pill}'>Meh😐</a>",
-            f"<a href='{hn}' style='{pill}'>No😔</a>",
+            f"<a href='{hy}' style='{pill}'>Yes 😃</a>",
+            f"<a href='{hm}' style='{pill}'>Meh 😐</a>",
+            f"<a href='{hn}' style='{pill}'>No 😔</a>",
         ]
     )
     return (

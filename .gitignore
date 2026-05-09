@@ -8,6 +8,3 @@ state.json
 .env
 216HomePage.html
 data/ad_feedback.sqlite
-
-# Local-only command cheat sheet (not for the repo)
-terminal_commands.txt

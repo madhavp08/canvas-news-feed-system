@@ -184,9 +184,9 @@ function AdFeedbackMcq({
   const b = base.replace(/\/+$/, "");
 
   const options: { token: string; label: string }[] = [
-    { token: "yes", label: "Yes😃" },
-    { token: "meh", label: "Meh😐" },
-    { token: "no", label: "No😔" },
+    { token: "yes", label: "Yes 😃" },
+    { token: "meh", label: "Meh 😐" },
+    { token: "no", label: "No 😔" },
   ];
 
   return (
