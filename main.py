@@ -46,6 +46,8 @@ _DOTENV_OVERRIDE_KEYS = frozenset(
         "SKIP_REACT_EMAIL_HTML",
         "EMAIL_PROMO_TEXT",
         "EMAIL_PROMO_LOGO_URL",
+        "AD_FEEDBACK_PUBLIC_URL",
+        "AD_FEEDBACK_DB_PATH",
     }
 )
 
@@ -262,7 +264,13 @@ def poll_loop(
                 use_cookie_cache=True,
                 notify_emails=notify_emails,
             )
-        except (FetchError, ParseError) as exc:
+        except FetchError as exc:
+            msg = str(exc)
+            if msg.startswith("Network error after ") and "(DNS/connectivity)" in msg:
+                logger.warning("Check skipped — %s (will retry next cycle)", msg)
+            else:
+                logger.error("Check failed (will retry next cycle): %s", exc)
+        except ParseError as exc:
             logger.error("Check failed (will retry next cycle): %s", exc)
         except Exception:
             logger.exception("Unexpected error (will retry next cycle)")
@@ -280,6 +288,24 @@ def poll_loop(
 
 
 def main() -> None:
+    if len(sys.argv) > 1:
+        fb_cmd = sys.argv[1]
+        if fb_cmd == "ad-feedback-serve":
+            _load_env_file()
+            from ad_feedback_cli import main_serve
+
+            sys.exit(main_serve(sys.argv[2:]))
+        if fb_cmd == "ad-feedback-stats":
+            _load_env_file()
+            from ad_feedback_cli import main_stats
+
+            sys.exit(main_stats())
+        if fb_cmd == "ad-feedback-chart":
+            _load_env_file()
+            from ad_feedback_cli import main_chart
+
+            sys.exit(main_chart(sys.argv[2:]))
+
     # Allow legacy invocations: `python main.py --url ...` without the `check` subcommand
     if len(sys.argv) > 1 and sys.argv[1] not in (
         "check",

@@ -1,11 +1,13 @@
 import {
   Body,
+  Column,
   Container,
   Head,
   Hr,
   Html,
   Img,
   Link,
+  Row,
   Section,
   Text,
 } from "@react-email/components";
@@ -14,6 +16,12 @@ import { EmailSummaryCard } from "./EmailSummaryCard";
 import type { NewsFeedEmailProps, ItemSegment } from "./types";
 
 const PROMO_URL_SPLIT = /(https?:\/\/[^\s]+)/gi;
+
+/** TL;DR / ad-feedback shared surface styles (aligned with EmailSummaryCard). */
+const TLDR_SURFACE_STYLE = {
+  backgroundColor: "#FFB8B8",
+  border: "1px solid #E85C5C",
+} as const;
 
 function promoHrefAllowed(href: string): boolean {
   const lc = href.trim().toLowerCase();
@@ -61,15 +69,50 @@ const promoBoxStyle = {
   backgroundColor: "#f9fafb",
 } as const;
 
-const promoLogoChipStyle = {
-  display: "inline-block",
-  marginBottom: "12px",
-  padding: "10px 14px",
-  borderRadius: "8px",
-  backgroundColor: "#252a33",
-  border: "1px solid #3d4553",
-  textAlign: "center" as const,
-};
+const promoTextStyle = {
+  margin: 0,
+  fontSize: "14px",
+  lineHeight: "21px",
+  color: "#2b303a",
+  fontFamily: "Arial, Helvetica, sans-serif",
+} as const;
+
+/** Inline logo sized just above promo text cap height (~21px line). */
+function PromoLogoImg({
+  src,
+  promoLinkHref,
+}: {
+  src: string;
+  promoLinkHref: string | null;
+}) {
+  const img = (
+    <Img
+      src={src}
+      alt="Thinkex"
+      width={62}
+      height={22}
+      style={{
+        display: "block",
+        height: "22px",
+        width: "auto",
+        maxWidth: "72px",
+        border: 0,
+        outline: "none",
+      }}
+    />
+  );
+
+  return promoLinkHref && promoHrefAllowed(promoLinkHref) ? (
+    <Link
+      href={promoLinkHref}
+      style={{ textDecoration: "none", border: "none", lineHeight: "1" }}
+    >
+      {img}
+    </Link>
+  ) : (
+    img
+  );
+}
 
 function PromoCallout({
   promoText,
@@ -82,56 +125,93 @@ function PromoCallout({
 }) {
   return (
     <Section className="promo-callout" style={promoBoxStyle}>
-      {promoLogoUrl ? (
-        <Section style={promoLogoChipStyle} className="promo-logo-chip">
-          {promoLinkHref ? (
-            <Link
-              href={promoLinkHref}
-              style={{ textDecoration: "none", border: "none" }}
-            >
-              <Img
-                src={promoLogoUrl}
-                alt="Thinkex"
-                width={132}
-                height={36}
-                style={{
-                  display: "block",
-                  width: "132px",
-                  height: "auto",
-                  border: 0,
-                  outline: "none",
-                }}
-              />
-            </Link>
-          ) : (
-            <Img
-              src={promoLogoUrl}
-              alt="Thinkex"
-              width={132}
-              height={36}
-              style={{
-                display: "block",
-                width: "132px",
-                height: "auto",
-                border: 0,
-                outline: "none",
-              }}
-            />
-          )}
-        </Section>
-      ) : null}
+      <Row style={{ verticalAlign: "middle" }}>
+        {promoLogoUrl ? (
+          <Column
+            style={{
+              width: "74px",
+              paddingRight: "10px",
+              verticalAlign: "middle",
+              lineHeight: "0",
+            }}
+            className="promo-logo-cell"
+          >
+            <PromoLogoImg src={promoLogoUrl} promoLinkHref={promoLinkHref} />
+          </Column>
+        ) : null}
+        <Column style={{ verticalAlign: "middle", width: promoLogoUrl ? undefined : "100%" }}>
+          <Text className="promo-text" style={{ ...promoTextStyle }}>
+            <PromoLinkified text={promoText} ctaHref={promoLinkHref} />
+          </Text>
+        </Column>
+      </Row>
+    </Section>
+  );
+}
+
+const AD_FEEDBACK_INNER_MARGIN = {
+  padding: "16px 18px",
+  margin: "12px 0 0",
+  borderRadius: "8px",
+  ...TLDR_SURFACE_STYLE,
+} as const;
+
+const adFeedbackOptStyle = {
+  display: "inline-block",
+  margin: "6px 8px 0 0",
+  padding: "8px 12px",
+  fontSize: "14px",
+  lineHeight: "20px",
+  fontFamily: "Arial, Helvetica, sans-serif",
+  color: "#1a1d24",
+  backgroundColor: "rgba(255,255,255,0.45)",
+  border: "1px solid #cf4a4a",
+  borderRadius: "999px",
+  textDecoration: "none",
+  fontWeight: 600 as const,
+} as const;
+
+function AdFeedbackMcq({
+  adFeedbackBaseUrl,
+}: {
+  adFeedbackBaseUrl: string | null | undefined;
+}) {
+  const base =
+    typeof adFeedbackBaseUrl === "string" ? adFeedbackBaseUrl.trim() : "";
+  if (!base.startsWith("http://") && !base.startsWith("https://")) {
+    return null;
+  }
+  const b = base.replace(/\/+$/, "");
+
+  const options: { token: string; label: string }[] = [
+    { token: "yes", label: "Yes😃" },
+    { token: "meh", label: "Meh😐" },
+    { token: "no", label: "No😔" },
+  ];
+
+  return (
+    <Section className="ad-feedback-card" style={AD_FEEDBACK_INNER_MARGIN}>
       <Text
-        className="promo-text"
         style={{
-          margin: 0,
+          margin: "0 0 4px",
           fontSize: "14px",
           lineHeight: "21px",
-          color: "#2b303a",
+          fontWeight: 600,
+          color: "#5a1f1f",
           fontFamily: "Arial, Helvetica, sans-serif",
         }}
       >
-        <PromoLinkified text={promoText} ctaHref={promoLinkHref} />
+        Was this ad helpful?
       </Text>
+      {options.map((o) => (
+        <Link
+          key={o.token}
+          href={`${b}/vote?choice=${encodeURIComponent(o.token)}`}
+          style={{ ...adFeedbackOptStyle }}
+        >
+          {o.label}
+        </Link>
+      ))}
     </Section>
   );
 }
@@ -180,6 +260,7 @@ export function NewsFeedEmail({
   promoText,
   promoLogoUrl,
   promoLinkHref,
+  adFeedbackBaseUrl = null,
 }: NewsFeedEmailProps) {
   const header =
     changeType === "NEW_DATE"
@@ -196,12 +277,12 @@ export function NewsFeedEmail({
                 background-color: #1a1d24 !important;
                 border-color: #3d4450 !important;
               }
-              .promo-logo-chip {
-                background-color: #0f1218 !important;
-                border-color: #5c6578 !important;
-              }
               .promo-text {
                 color: #e8eaed !important;
+              }
+              .ad-feedback-card {
+                background-color: #4a2929 !important;
+                border-color: #cf4a4a !important;
               }
             }
           `}
@@ -214,8 +295,6 @@ export function NewsFeedEmail({
           fontFamily: "Arial, Helvetica, sans-serif",
         }}
       >
-        {/* Preheader must live inside <body>. <Preview> renders before <body> and
-            breaks HTML; Gmail has been observed to show a completely blank message. */}
         {previewText ? (
           <Section
             style={{
@@ -255,6 +334,11 @@ export function NewsFeedEmail({
               promoLinkHref={promoLinkHref}
             />
           ) : null}
+          <AdFeedbackMcq
+            adFeedbackBaseUrl={
+              promoText ? (adFeedbackBaseUrl ?? null) : null
+            }
+          />
           <Hr style={{ borderColor: "#e5e7eb", margin: "28px 0 16px" }} />
           <Text style={{ color: "#888888", fontSize: "12px", margin: 0 }}>
             Sent by Madhav&apos;s Canvas News Feed Monitor

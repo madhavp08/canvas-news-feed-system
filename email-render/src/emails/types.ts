@@ -21,4 +21,9 @@ export type NewsFeedEmailProps = {
   promoLinkHref: string | null;
   /** Promo logo image URL when EMAIL_PROMO_TEXT is set (EMAIL_PROMO_LOGO_URL or default) */
   promoLogoUrl: string | null;
+  /**
+   * When set with promo, email shows “Was this ad helpful?” linking to `{base}/vote?choice=…`.
+   * Set AD_FEEDBACK_PUBLIC_URL in `.env`; run `python main.py ad-feedback-serve`.
+   */
+  adFeedbackBaseUrl?: string | null;
 };

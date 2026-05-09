@@ -26,9 +26,9 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 logger = logging.getLogger(__name__)
 
 # Retries for API GET when DNS/connectivity blips (single poll cycle; hourly loop unchanged).
-_FETCH_TRANSIENT_ATTEMPTS = 5
+_FETCH_TRANSIENT_ATTEMPTS = 8
 _FETCH_BACKOFF_INITIAL_S = 1.0
-_FETCH_BACKOFF_MAX_S = 30.0
+_FETCH_BACKOFF_MAX_S = 60.0
 
 # In-process cookie cache for long-running `poll` only (see `fetch_from_url(..., use_cookie_cache=True)`).
 _poll_cookie_cache: dict[tuple[str, str], dict[str, str]] = {}
@@ -281,11 +281,11 @@ def _fetch_front_page_with_cookies(
                 )
                 time.sleep(delay)
                 continue
-            logger.error(
-                "API GET failed after %d attempts: %s",
+            logger.warning(
+                "API GET gave up after %d attempts (transient %s — will retry on next poll): %s",
                 _FETCH_TRANSIENT_ATTEMPTS,
+                type(exc).__name__,
                 exc,
-                exc_info=True,
             )
             raise FetchError(
                 f"Network error after {_FETCH_TRANSIENT_ATTEMPTS} attempts "

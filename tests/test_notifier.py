@@ -8,6 +8,7 @@ import re
 from notifier import (
     NotifyError,
     SENDGRID_MAX_PERSONALIZATIONS_PER_REQUEST,
+    _append_ad_feedback_plain,
     _append_promo_to_plain,
     _build_body,
     _build_html_body,
@@ -28,6 +29,8 @@ from notifier import (
 def _clear_promo_email_env(monkeypatch):
     monkeypatch.delenv("EMAIL_PROMO_TEXT", raising=False)
     monkeypatch.delenv("EMAIL_PROMO_LOGO_URL", raising=False)
+    monkeypatch.delenv("AD_FEEDBACK_PUBLIC_URL", raising=False)
+    monkeypatch.delenv("AD_FEEDBACK_DB_PATH", raising=False)
 
 
 def _sample_entry():
@@ -161,6 +164,7 @@ def test_injected_react_html_used_without_legacy_tldr_prefix(mock_post):
         assert props["promoText"] is None
         assert props["promoLogoUrl"] is None
         assert props["promoLinkHref"] is None
+        assert props.get("adFeedbackBaseUrl") is None
         d = props["dateRaw"]
         return f"<html><body>{d} Announcement A</body></html>"
 
@@ -263,6 +267,7 @@ def test_react_email_props_promo_null(monkeypatch):
     assert props["promoText"] is None
     assert props["promoLogoUrl"] is None
     assert props["promoLinkHref"] is None
+    assert props["adFeedbackBaseUrl"] is None
 
 
 def test_react_email_props_promo_from_env(monkeypatch):
@@ -278,6 +283,23 @@ def test_react_email_props_promo_from_env(monkeypatch):
     assert props["promoLogoUrl"].endswith("skgGwtd")
     assert "thinkex.app/newlogothinkex-light.svg" in props["promoLogoUrl"]
     assert props["promoLinkHref"] == "https://www.thinkex.app/home"
+    assert props["adFeedbackBaseUrl"] is None
+
+
+def test_react_email_props_promo_feedback_base(monkeypatch):
+    monkeypatch.setenv(
+        "EMAIL_PROMO_TEXT",
+        "Try https://www.thinkex.app/home ",
+    )
+    monkeypatch.setenv(
+        "AD_FEEDBACK_PUBLIC_URL",
+        "https://feedback.example:8443/",
+    )
+    entry = {"date_raw": "Monday", "items": ["x"]}
+    subj = _build_subject("NEW_DATE", entry["date_raw"])
+    preview = _preview_text(subj, entry["date_raw"], None, None)
+    props = _react_email_props("NEW_DATE", entry, None, preview)
+    assert props["adFeedbackBaseUrl"] == "https://feedback.example:8443"
 
 
 def test_react_email_props_promo_logo_override(monkeypatch):
@@ -320,7 +342,7 @@ def test_legacy_html_promo_escaped_and_linkified(monkeypatch):
     assert "&amp;lt;x&amp;gt;" in html
     assert 'href="https://example.com/foo"' in html
     assert "newlogothinkex-light.svg" in html
-    assert "promo-logo-chip" in html
+    assert "promo-logo-cell" in html
 
 
 def test_linkify_promo_unified_cta_multiple_urls():
@@ -364,6 +386,21 @@ def test_append_promo_to_plain(monkeypatch):
     body = _build_body("NEW_DATE", _sample_entry())
     out = _append_promo_to_plain(body)
     assert "\n---\nPromo line\n" in out
+
+
+def test_append_ad_feedback_plain_after_promo(monkeypatch):
+    monkeypatch.setenv("EMAIL_PROMO_TEXT", "Promo https://thinkex.app/x")
+    monkeypatch.setenv(
+        "AD_FEEDBACK_PUBLIC_URL",
+        "https://fb.test",
+    )
+    body = _build_body("NEW_DATE", _sample_entry())
+    body = _append_promo_to_plain(body)
+    out = _append_ad_feedback_plain(body)
+    assert "Was this ad helpful?" in out
+    assert "/vote?choice=yes" in out
+    assert "/vote?choice=meh" in out
+    assert "/vote?choice=no" in out
 
 
 def test_email_html_passes_send_checks_decodes_entities_in_body():

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
+from ad_feedback_store import vote_href
 from parser import ItemSegment, canonical_line_plain, normalize_text
 from google import genai
 from google.genai import types as genai_types
@@ -464,6 +465,22 @@ def _escape_href_attr(href: str) -> str:
     return href.replace("&", "&amp;").replace('"', "&quot;")
 
 
+def _ad_feedback_public_url() -> str | None:
+    """Public HTTP(S) base for ``/vote?choice=…`` links; requires ``EMAIL_PROMO_TEXT``."""
+    if not _email_promo_text():
+        return None
+    raw = (os.environ.get("AD_FEEDBACK_PUBLIC_URL") or "").strip()
+    if not raw:
+        return None
+    if not _legacy_link_href_ok(raw):
+        logger.warning(
+            "AD_FEEDBACK_PUBLIC_URL is not http(s); ignoring (%s)",
+            raw[:48],
+        )
+        return None
+    return raw.rstrip("/")
+
+
 def _react_email_props(
     change_type: str,
     newest_entry: dict,
@@ -477,6 +494,7 @@ def _react_email_props(
     promo_text = _email_promo_text()
     promo_logo = _email_promo_logo_url()
     promo_link = _first_promo_http_url(promo_text) if promo_text else None
+    fb_base = _ad_feedback_public_url()
     return {
         "changeType": template_ct,
         "dateRaw": newest_entry["date_raw"],
@@ -486,6 +504,7 @@ def _react_email_props(
         "promoText": promo_text,
         "promoLogoUrl": promo_logo,
         "promoLinkHref": promo_link,
+        "adFeedbackBaseUrl": fb_base,
     }
 
 
@@ -551,9 +570,10 @@ def _build_html_body(change_type: str, newest_entry: dict) -> str:
 
     li_items = "\n".join(f"<li>{_segments_to_li_inner_html(line)}</li>" for line in items)
     promo = _legacy_promo_callout_html()
+    feedback = _legacy_ad_feedback_html()
     return (
         f"<p>{header}</p><ol>{li_items}</ol>"
-        f"{promo}"
+        f"{promo}{feedback}"
         f"<hr><p style='color:#888;font-size:12px;'>Sent by Madhav's Canvas News Feed Monitor</p>"
     )
 
@@ -596,6 +616,22 @@ def _append_promo_to_plain(body: str) -> str:
     return f"{body.rstrip()}\n\n---\n{promo}\n"
 
 
+def _append_ad_feedback_plain(body: str) -> str:
+    base = _ad_feedback_public_url()
+    if not base:
+        return body
+    try:
+        yes_u = vote_href(base, "yes")
+        meh_u = vote_href(base, "meh")
+        no_u = vote_href(base, "no")
+    except ValueError:
+        return body
+    return (
+        f"{body.rstrip()}\n\nWas this ad helpful?\n"
+        f"Yes😃 — {yes_u}\nMeh😐 — {meh_u}\nNo😔 — {no_u}\n"
+    )
+
+
 def _linkify_promo_to_html(raw: str, cta_href: str | None = None) -> str:
     """Linkify http(s) spans. When *cta_href* is safe, every anchor uses it (single CTA).
 
@@ -627,33 +663,74 @@ def _legacy_promo_callout_html() -> str:
     promo_link = _first_promo_http_url(raw)
     inner = _linkify_promo_to_html(raw, promo_link)
     logo_url = _email_promo_logo_url()
-    logo_block = ""
+    logo_cell = ""
     if logo_url:
         esc_src = _escape_href_attr(logo_url)
-        chip = (
-            "<div class='promo-logo-chip' style='display:inline-block;margin:0 0 12px;"
-            "padding:10px 14px;border-radius:8px;background-color:#252a33;"
-            "border:1px solid #3d4553;text-align:center;'>"
-        )
         img = (
-            "<img src='"
-            f"{esc_src}"
-            "' alt='Thinkex' width='132' height='36' style='display:block;"
-            "width:132px;height:auto;border:0;outline:none;'/>"
+            f"<img src='{esc_src}' alt='Thinkex' width='62' height='22' "
+            "style='display:block;height:22px;width:auto;max-width:72px;"
+            "border:0;outline:none;'/>"
         )
         if promo_link:
             esc_href = _escape_href_attr(promo_link)
-            logo_block = (
-                f"{chip}<a href='{esc_href}' style='text-decoration:none;"
-                f"border:none;'>{img}</a></div>"
+            wrap = (
+                f"<a href='{esc_href}' style='text-decoration:none;"
+                "border:none;line-height:0;display:block;'>" + img + "</a>"
             )
         else:
-            logo_block = f"{chip}{img}</div>"
+            wrap = img
+        logo_cell = (
+            "<td class='promo-logo-cell' valign='middle'"
+            " style='padding:0 10px 0 0;width:74px;line-height:0;'>"
+            f"{wrap}</td>"
+        )
+    inner_cell = (
+        "<td valign='middle' style='padding:0;font-size:14px;line-height:21px;"
+        "color:#2b303a;font-family:Arial,Helvetica,sans-serif;'>" + inner + "</td>"
+    )
+    table = (
+        "<table role='presentation' cellpadding='0' cellspacing='0' border='0' "
+        "width='100%' style='border-collapse:collapse;'><tr>"
+        f"{logo_cell}{inner_cell}</tr></table>"
+    )
     return (
         "<div class='promo-callout' style='border:1px solid #e2e6ef;border-radius:10px;"
-        "padding:18px 18px;margin:20px 0 0;background-color:#f9fafb;font-size:14px;"
-        "line-height:21px;color:#2b303a;font-family:Arial,Helvetica,sans-serif;'>"
-        f"{logo_block}{inner}</div>"
+        "padding:18px 18px;margin:20px 0 0;background-color:#f9fafb;font-family:Arial,"
+        "Helvetica,sans-serif;'>"
+        f"{table}</div>"
+    )
+
+
+def _legacy_ad_feedback_html() -> str:
+    base = _ad_feedback_public_url()
+    if not base:
+        return ""
+    pill = (
+        "display:inline-block;margin:6px 8px 0 0;padding:8px 12px;"
+        "font-size:14px;line-height:20px;font-weight:600;color:#1a1d24;"
+        "background-color:rgba(255,255,255,0.45);border:1px solid #cf4a4a;"
+        "border-radius:999px;text-decoration:none;font-family:Arial,Helvetica,sans-serif;"
+    )
+    try:
+        hy = _escape_href_attr(vote_href(base, "yes"))
+        hm = _escape_href_attr(vote_href(base, "meh"))
+        hn = _escape_href_attr(vote_href(base, "no"))
+    except ValueError:
+        return ""
+    buttons = "".join(
+        [
+            f"<a href='{hy}' style='{pill}'>Yes😃</a>",
+            f"<a href='{hm}' style='{pill}'>Meh😐</a>",
+            f"<a href='{hn}' style='{pill}'>No😔</a>",
+        ]
+    )
+    return (
+        "<div class='ad-feedback-card' style='background-color:#FFB8B8;"
+        "border:1px solid #E85C5C;border-radius:8px;padding:16px 18px;"
+        "margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;'>"
+        "<p style='margin:0 0 10px;font-size:14px;line-height:21px;font-weight:600;color:#5a1f1f;'>"
+        "Was this ad helpful?</p>"
+        f"{buttons}</div>"
     )
 
 
@@ -793,6 +870,9 @@ def send_notification(
     GEMINI_MODEL prepend a Gemini TL;DR; if Gemini is unavailable, the email sends
     without it. Optional EMAIL_PROMO_TEXT adds a promo callout after the bulletin in
     both MIME parts (http/https snippets are linked; otherwise text is escaped).
+    When ``AD_FEEDBACK_PUBLIC_URL`` is also set (https recommended), emails include a
+    “Was this ad helpful?” strip with tap targets; clicks are recorded by
+    ``python main.py ad-feedback-serve`` in SQLite (``AD_FEEDBACK_DB_PATH``).
 
     HTML body is rendered with React Email (``email-render/``) when the CLI is
     available. Rendered HTML is normalized (leading non-HTML noise stripped) and
@@ -830,6 +910,7 @@ def send_notification(
     if tldr_raw:
         plain = _prepend_tldr_plain(plain, tldr_raw)
     plain = _append_promo_to_plain(plain)
+    plain = _append_ad_feedback_plain(plain)
 
     tldr_norm = normalize_tldr(tldr_raw)
     preview = _preview_text(
