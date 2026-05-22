@@ -77,7 +77,13 @@ const promoTextStyle = {
   fontFamily: "Arial, Helvetica, sans-serif",
 } as const;
 
-/** Inline logo sized just above promo text cap height (~21px line). */
+/** Promo strip logo slot (px): image scales inside this box without distortion. */
+const PROMO_LOGO_MAX_WIDTH = 79;
+const PROMO_LOGO_MAX_HEIGHT = 54;
+/** Logo column = logo width + gap before promo text. */
+const PROMO_LOGO_CELL_WIDTH = PROMO_LOGO_MAX_WIDTH + 10;
+
+/** Inline logo fills the left promo slot (79×54 max), aspect ratio preserved. */
 function PromoLogoImg({
   src,
   promoLinkHref,
@@ -89,13 +95,15 @@ function PromoLogoImg({
     <Img
       src={src}
       alt="Thinkex"
-      width={62}
-      height={22}
+      width={PROMO_LOGO_MAX_HEIGHT}
+      height={PROMO_LOGO_MAX_HEIGHT}
       style={{
         display: "block",
-        height: "22px",
-        width: "auto",
-        maxWidth: "72px",
+        width: `${PROMO_LOGO_MAX_HEIGHT}px`,
+        height: `${PROMO_LOGO_MAX_HEIGHT}px`,
+        maxWidth: `${PROMO_LOGO_MAX_WIDTH}px`,
+        maxHeight: `${PROMO_LOGO_MAX_HEIGHT}px`,
+        objectFit: "contain",
         border: 0,
         outline: "none",
       }}
@@ -129,8 +137,9 @@ function PromoCallout({
         {promoLogoUrl ? (
           <Column
             style={{
-              width: "74px",
+              width: `${PROMO_LOGO_CELL_WIDTH}px`,
               paddingRight: "10px",
+              paddingLeft: "14px",
               verticalAlign: "middle",
               lineHeight: "0",
             }}

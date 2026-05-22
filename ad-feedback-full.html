@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ad feedback</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+    margin: 0; padding: 24px; background: #fafafa; color: #1a1a1a;
+  }
+  h1 { font-size: 1.25rem; margin: 0 0 8px; }
+  .subtitle { font-size: 0.85rem; color: #555; margin: 0 0 20px; }
+  code { font-size: 0.8em; background: #eee; padding: 2px 6px; border-radius: 4px; }
+  .panel {
+    background: #fff; border-radius: 10px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    max-width: 620px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(6em,8em) 1fr minmax(5.5em,7em);
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .label { font-weight: 600; }
+  .track {
+    height: 22px;
+    border-radius: 6px;
+    background: #e8e8e8;
+    overflow: hidden;
+  }
+  .fill { height: 100%; border-radius: 6px;
+    min-width: 0;
+    transition: width 0.25s ease;
+  }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pct { color: #666; font-size: 0.92em; }
+  .footer { margin-top: 18px; font-size: 0.75rem; color: #888;
+    word-break: break-all; }
+  .note { margin: 12px 0 0; color: #444; line-height: 1.45; }
+  .total {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    font-size: 0.95rem;
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>Was this ad helpful?</h1>
+  <p class="subtitle"><strong>Private</strong> - do not publish or forward this HTML.</p>
+  
+  <div class="row"><span class="label">Yes 😃</span><div class="track" aria-label="Yes 😃"><div class="fill" style="width:37.21%;background:#1b5e20"></div></div><span class="num">16 <span class="pct">(37.2%)</span></span></div><div class="row"><span class="label">Meh 😐</span><div class="track" aria-label="Meh 😐"><div class="fill" style="width:25.58%;background:#f9a825"></div></div><span class="num">11 <span class="pct">(25.6%)</span></span></div><div class="row"><span class="label">No 😔</span><div class="track" aria-label="No 😔"><div class="fill" style="width:37.21%;background:#b71c1c"></div></div><span class="num">16 <span class="pct">(37.2%)</span></span></div>
+  <p class="total"><strong>Total responses:</strong> 43</p>
+  <p class="footer">Source: <code>/Users/madhav.p/Projects/canvas-news-feed-system/data/ad_feedback.sqlite</code></p>
+</div>
+</body>
+</html>

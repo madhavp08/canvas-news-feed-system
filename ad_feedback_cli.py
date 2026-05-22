@@ -30,7 +30,7 @@ def render_bar_chart(width: int = 36) -> str:
     counts = vote_counts()
     total = sum(counts.values())
     lines: list[str] = []
-    title = "Was this product helpful?"
+    title = "Was this ad helpful?"
     lines.append(title)
     if total == 0:
         lines.append("  (no votes yet)")

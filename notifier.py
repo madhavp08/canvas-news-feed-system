@@ -667,9 +667,9 @@ def _legacy_promo_callout_html() -> str:
     if logo_url:
         esc_src = _escape_href_attr(logo_url)
         img = (
-            f"<img src='{esc_src}' alt='Thinkex' width='62' height='22' "
-            "style='display:block;height:22px;width:auto;max-width:72px;"
-            "border:0;outline:none;'/>"
+            f"<img src='{esc_src}' alt='Thinkex' width='54' height='54' "
+            "style='display:block;width:54px;height:54px;max-width:79px;"
+            "max-height:54px;object-fit:contain;border:0;outline:none;'/>"
         )
         if promo_link:
             esc_href = _escape_href_attr(promo_link)
@@ -681,7 +681,7 @@ def _legacy_promo_callout_html() -> str:
             wrap = img
         logo_cell = (
             "<td class='promo-logo-cell' valign='middle'"
-            " style='padding:0 10px 0 0;width:74px;line-height:0;'>"
+            " style='padding:0 10px 0 0;width:89px;line-height:0;'>"
             f"{wrap}</td>"
         )
     inner_cell = (
