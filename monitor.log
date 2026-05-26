@@ -3569,3 +3569,1011 @@
   "total_entries_parsed": 41
 }
 2026-05-22 13:47:10 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 14:02:10 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 14:02:10 fetcher INFO  Fetched front page via API (99225 bytes, 367.1 ms)
+2026-05-22 14:02:10 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 14:02:10 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 14:02:10 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 14:02:10 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 14:17:11 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 14:17:11 fetcher INFO  Fetched front page via API (99225 bytes, 253.3 ms)
+2026-05-22 14:17:11 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 14:17:11 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 14:17:11 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 14:17:11 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 14:32:11 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 14:32:11 fetcher INFO  Fetched front page via API (99225 bytes, 334.7 ms)
+2026-05-22 14:32:11 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 14:32:11 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 14:32:11 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 14:32:11 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 14:47:11 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 14:47:12 fetcher INFO  Fetched front page via API (99225 bytes, 323.1 ms)
+2026-05-22 14:47:12 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 14:47:12 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 14:47:12 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 14:47:12 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 15:15:28 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 15:15:29 fetcher INFO  Fetched front page via API (99225 bytes, 269.6 ms)
+2026-05-22 15:15:29 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 15:15:29 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 15:15:29 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 15:15:29 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 15:36:42 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 15:36:42 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-22 15:36:43 fetcher INFO  Fetched front page via API (99225 bytes, 368.7 ms)
+2026-05-22 15:36:43 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 15:36:43 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 15:36:43 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 15:36:43 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 16:16:15 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 16:16:16 fetcher INFO  Fetched front page via API (99225 bytes, 723.9 ms)
+2026-05-22 16:16:16 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 16:16:16 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 16:16:16 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 16:16:16 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 18:40:52 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 18:40:52 fetcher INFO  Fetched front page via API (99225 bytes, 256.7 ms)
+2026-05-22 18:40:52 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 18:40:52 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 18:40:52 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 18:40:52 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 19:18:40 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 19:18:40 fetcher INFO  Fetched front page via API (99225 bytes, 549.7 ms)
+2026-05-22 19:18:40 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 19:18:40 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 19:18:40 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 19:18:40 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 20:11:03 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 20:11:03 fetcher INFO  Fetched front page via API (99225 bytes, 330.4 ms)
+2026-05-22 20:11:03 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 20:11:03 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 20:11:03 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 20:11:03 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 20:26:03 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 20:26:04 fetcher INFO  Fetched front page via API (99225 bytes, 319.7 ms)
+2026-05-22 20:26:04 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 20:26:04 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 20:26:04 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 20:26:04 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 20:41:04 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 20:41:04 fetcher INFO  Fetched front page via API (99225 bytes, 276.7 ms)
+2026-05-22 20:41:04 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 20:41:04 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 20:41:04 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 20:41:04 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 20:56:04 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 20:56:05 fetcher INFO  Fetched front page via API (99225 bytes, 510.0 ms)
+2026-05-22 20:56:05 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 20:56:05 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 20:56:05 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 20:56:05 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 21:12:10 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 21:12:10 fetcher INFO  Fetched front page via API (99225 bytes, 290.2 ms)
+2026-05-22 21:12:10 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 21:12:10 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 21:12:10 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 21:12:10 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 21:27:10 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 21:27:10 fetcher INFO  Fetched front page via API (99225 bytes, 274.2 ms)
+2026-05-22 21:27:10 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 21:27:10 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 21:27:10 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 21:27:10 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 21:42:10 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 21:42:11 fetcher INFO  Fetched front page via API (99225 bytes, 348.9 ms)
+2026-05-22 21:42:11 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 21:42:11 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 21:42:11 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 21:42:11 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-22 21:57:11 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-22 21:57:11 fetcher INFO  Fetched front page via API (99225 bytes, 288.8 ms)
+2026-05-22 21:57:11 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-22 21:57:11 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-22 21:57:11 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-22 21:57:11 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 09:23:56 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 09:23:56 fetcher INFO  Fetched front page via API (99225 bytes, 316.9 ms)
+2026-05-23 09:23:56 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 09:23:56 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 09:23:56 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 09:23:56 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 12:31:35 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 12:31:35 fetcher INFO  Fetched front page via API (99225 bytes, 264.3 ms)
+2026-05-23 12:31:35 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 12:31:35 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 12:31:35 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 12:31:35 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 12:46:35 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 12:46:35 fetcher INFO  Fetched front page via API (99225 bytes, 233.9 ms)
+2026-05-23 12:46:35 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 12:46:35 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 12:46:35 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 12:46:35 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 13:01:35 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 13:01:36 fetcher INFO  Fetched front page via API (99225 bytes, 854.2 ms)
+2026-05-23 13:01:36 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 13:01:36 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 13:01:36 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 13:01:36 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 13:16:36 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 13:16:37 fetcher INFO  Fetched front page via API (99225 bytes, 245.0 ms)
+2026-05-23 13:16:37 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 13:16:37 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 13:16:37 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 13:16:37 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 13:49:35 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 13:49:35 fetcher INFO  Fetched front page via API (99225 bytes, 272.2 ms)
+2026-05-23 13:49:35 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 13:49:35 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 13:49:35 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 13:49:35 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 14:04:35 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 14:04:35 fetcher INFO  Fetched front page via API (99225 bytes, 291.1 ms)
+2026-05-23 14:04:35 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 14:04:35 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 14:04:35 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 14:04:35 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 15:25:12 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 15:25:12 fetcher INFO  Fetched front page via API (99225 bytes, 291.2 ms)
+2026-05-23 15:25:12 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 15:25:12 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 15:25:12 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 15:25:12 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 15:40:12 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 15:40:12 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-23 15:40:13 fetcher INFO  Fetched front page via API (99225 bytes, 239.4 ms)
+2026-05-23 15:40:13 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 15:40:13 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 15:40:13 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 15:40:13 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 15:55:13 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 15:55:13 fetcher INFO  Fetched front page via API (99225 bytes, 267.5 ms)
+2026-05-23 15:55:13 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 15:55:13 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 15:55:13 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 15:55:13 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 16:10:13 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 16:10:13 fetcher INFO  Fetched front page via API (99225 bytes, 290.3 ms)
+2026-05-23 16:10:13 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 16:10:13 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 16:10:13 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 16:10:13 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 16:25:13 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 16:25:14 fetcher INFO  Fetched front page via API (99225 bytes, 322.6 ms)
+2026-05-23 16:25:14 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 16:25:14 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 16:25:14 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 16:25:14 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 16:40:14 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 16:40:14 fetcher INFO  Fetched front page via API (99225 bytes, 264.5 ms)
+2026-05-23 16:40:14 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 16:40:14 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 16:40:14 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 16:40:14 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 16:59:31 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 16:59:31 fetcher INFO  Fetched front page via API (99225 bytes, 360.8 ms)
+2026-05-23 16:59:31 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 16:59:31 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 16:59:31 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 16:59:31 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 17:14:31 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 17:14:32 fetcher INFO  Fetched front page via API (99225 bytes, 325.5 ms)
+2026-05-23 17:14:32 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 17:14:32 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 17:14:32 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 17:14:32 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 17:29:32 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 17:29:32 fetcher INFO  Fetched front page via API (99225 bytes, 518.6 ms)
+2026-05-23 17:29:32 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 17:29:32 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 17:29:32 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 17:29:32 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 17:59:58 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 17:59:59 fetcher INFO  Fetched front page via API (99225 bytes, 629.3 ms)
+2026-05-23 17:59:59 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 17:59:59 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 17:59:59 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 17:59:59 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 18:24:31 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 18:24:31 fetcher INFO  Fetched front page via API (99225 bytes, 269.7 ms)
+2026-05-23 18:24:31 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 18:24:31 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 18:24:31 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 18:24:31 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 18:39:31 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 18:39:31 fetcher INFO  Fetched front page via API (99225 bytes, 364.4 ms)
+2026-05-23 18:39:32 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 18:39:32 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 18:39:32 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 18:39:32 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 18:54:32 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 18:54:32 fetcher INFO  Fetched front page via API (99225 bytes, 276.5 ms)
+2026-05-23 18:54:32 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 18:54:32 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 18:54:32 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 18:54:32 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 23:08:19 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 23:08:19 fetcher INFO  Fetched front page via API (99225 bytes, 460.1 ms)
+2026-05-23 23:08:19 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 23:08:19 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 23:08:19 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 23:08:19 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 23:23:19 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 23:23:19 fetcher INFO  Fetched front page via API (99225 bytes, 276.8 ms)
+2026-05-23 23:23:20 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 23:23:20 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 23:23:20 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 23:23:20 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 23:38:20 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 23:38:20 fetcher INFO  Fetched front page via API (99225 bytes, 334.0 ms)
+2026-05-23 23:38:20 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 23:38:20 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 23:38:20 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 23:38:20 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-23 23:53:20 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-23 23:53:20 fetcher INFO  Fetched front page via API (99225 bytes, 336.2 ms)
+2026-05-23 23:53:20 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-23 23:53:20 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-23 23:53:20 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-23 23:53:20 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 00:08:20 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 00:08:21 fetcher INFO  Fetched front page via API (99225 bytes, 320.2 ms)
+2026-05-24 00:08:21 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 00:08:21 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 00:08:21 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 00:08:21 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 00:23:21 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 00:23:21 fetcher INFO  Fetched front page via API (99225 bytes, 319.3 ms)
+2026-05-24 00:23:21 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 00:23:21 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 00:23:21 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 00:23:21 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 00:38:21 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 00:38:21 fetcher INFO  Fetched front page via API (99225 bytes, 258.9 ms)
+2026-05-24 00:38:21 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 00:38:21 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 00:38:21 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 00:38:21 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 00:53:21 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 00:53:22 fetcher INFO  Fetched front page via API (99225 bytes, 281.3 ms)
+2026-05-24 00:53:22 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 00:53:22 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 00:53:22 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 00:53:22 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 01:08:22 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 01:08:22 fetcher INFO  Fetched front page via API (99225 bytes, 298.9 ms)
+2026-05-24 01:08:22 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 01:08:22 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 01:08:22 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 01:08:22 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 01:23:22 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 01:23:22 fetcher INFO  Fetched front page via API (99225 bytes, 321.6 ms)
+2026-05-24 01:23:23 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 01:23:23 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 01:23:23 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 01:23:23 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 01:38:23 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 01:38:23 fetcher INFO  Fetched front page via API (99225 bytes, 272.9 ms)
+2026-05-24 01:38:23 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 01:38:23 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 01:38:23 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 01:38:23 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 01:53:23 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 01:53:23 fetcher INFO  Fetched front page via API (99225 bytes, 274.5 ms)
+2026-05-24 01:53:23 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 01:53:23 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 01:53:23 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 01:53:23 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 02:08:23 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 02:08:24 fetcher INFO  Fetched front page via API (99225 bytes, 397.6 ms)
+2026-05-24 02:08:24 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 02:08:24 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 02:08:24 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 02:08:24 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 08:30:24 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 08:46:15 fetcher WARNING  API GET failed (attempt 1/8, transient ReadTimeout): HTTPSConnectionPool(host='umd.instructure.com', port=443): Read timed out. (read timeout=30); retrying in 1.0s
+2026-05-24 08:53:26 fetcher INFO  Fetched front page via API (99225 bytes, 1322.9 ms)
+2026-05-24 08:53:26 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 08:53:26 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 08:53:26 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 08:53:26 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 14:15:10 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 14:15:10 fetcher INFO  Fetched front page via API (99225 bytes, 471.5 ms)
+2026-05-24 14:15:10 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 14:15:10 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 14:15:10 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 14:15:10 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 14:30:10 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 14:30:10 fetcher INFO  Fetched front page via API (99225 bytes, 288.3 ms)
+2026-05-24 14:30:11 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 14:30:11 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 14:30:11 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 14:30:11 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 14:45:11 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 14:45:11 fetcher INFO  Fetched front page via API (99225 bytes, 667.6 ms)
+2026-05-24 14:45:11 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 14:45:11 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 14:45:11 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 14:45:11 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 18:20:13 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 18:20:13 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-24 18:20:14 fetcher INFO  Fetched front page via API (99225 bytes, 1014.8 ms)
+2026-05-24 18:20:14 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 18:20:14 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 18:20:14 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 18:20:14 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 19:49:26 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 19:49:27 fetcher INFO  Fetched front page via API (99225 bytes, 400.1 ms)
+2026-05-24 19:49:27 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 19:49:27 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 19:49:27 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 19:49:27 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 20:09:36 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 20:09:36 fetcher INFO  Fetched front page via API (99225 bytes, 278.4 ms)
+2026-05-24 20:09:36 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 20:09:36 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 20:09:36 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 20:09:36 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 20:24:36 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 20:24:36 fetcher INFO  Fetched front page via API (99225 bytes, 315.6 ms)
+2026-05-24 20:24:37 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 20:24:37 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 20:24:37 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 20:24:37 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 20:43:44 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 20:43:45 fetcher INFO  Fetched front page via API (99225 bytes, 564.1 ms)
+2026-05-24 20:43:45 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 20:43:45 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 20:43:45 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 20:43:45 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 21:17:23 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 21:17:23 fetcher INFO  Fetched front page via API (99225 bytes, 347.3 ms)
+2026-05-24 21:17:23 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 21:17:23 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 21:17:23 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 21:17:23 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 21:32:23 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 21:32:23 fetcher INFO  Fetched front page via API (99225 bytes, 275.7 ms)
+2026-05-24 21:32:23 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 21:32:23 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 21:32:23 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 21:32:23 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 21:47:23 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 21:47:24 fetcher INFO  Fetched front page via API (99225 bytes, 255.9 ms)
+2026-05-24 21:47:24 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 21:47:24 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 21:47:24 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 21:47:24 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 22:13:55 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 22:13:56 fetcher INFO  Fetched front page via API (99225 bytes, 275.5 ms)
+2026-05-24 22:13:56 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 22:13:56 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 22:13:56 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 22:13:56 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 22:28:56 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 22:28:56 fetcher INFO  Fetched front page via API (99225 bytes, 410.6 ms)
+2026-05-24 22:28:56 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 22:28:56 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 22:28:56 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 22:28:56 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 22:43:56 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 22:43:56 fetcher INFO  Fetched front page via API (99225 bytes, 245.6 ms)
+2026-05-24 22:43:56 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 22:43:56 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 22:43:56 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 22:43:56 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 22:58:56 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 22:58:57 fetcher INFO  Fetched front page via API (99225 bytes, 249.2 ms)
+2026-05-24 22:58:57 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 22:58:57 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 22:58:57 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 22:58:57 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 23:13:57 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 23:13:57 fetcher INFO  Fetched front page via API (99225 bytes, 322.9 ms)
+2026-05-24 23:13:57 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 23:13:57 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 23:13:57 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 23:13:57 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 23:28:57 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 23:28:57 fetcher INFO  Fetched front page via API (99225 bytes, 320.1 ms)
+2026-05-24 23:28:58 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 23:28:58 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 23:28:58 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 23:28:58 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 23:43:58 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 23:43:58 fetcher INFO  Fetched front page via API (99225 bytes, 236.5 ms)
+2026-05-24 23:43:58 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 23:43:58 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 23:43:58 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 23:43:58 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-24 23:58:58 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-24 23:58:58 fetcher INFO  Fetched front page via API (99225 bytes, 386.3 ms)
+2026-05-24 23:58:58 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-24 23:58:58 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-24 23:58:58 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-24 23:58:58 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 00:13:58 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 00:13:59 fetcher INFO  Fetched front page via API (99225 bytes, 312.1 ms)
+2026-05-25 00:13:59 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 00:13:59 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 00:13:59 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 00:13:59 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 00:28:59 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 00:28:59 fetcher INFO  Fetched front page via API (99225 bytes, 299.6 ms)
+2026-05-25 00:28:59 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 00:28:59 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 00:28:59 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 00:28:59 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 00:43:59 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 00:43:59 fetcher INFO  Fetched front page via API (99225 bytes, 250.2 ms)
+2026-05-25 00:43:59 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 00:43:59 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 00:43:59 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 00:43:59 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 00:58:59 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 00:59:00 fetcher INFO  Fetched front page via API (99225 bytes, 269.5 ms)
+2026-05-25 00:59:00 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 00:59:00 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 00:59:00 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 00:59:00 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 01:14:00 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 01:14:00 fetcher INFO  Fetched front page via API (99225 bytes, 314.9 ms)
+2026-05-25 01:14:00 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 01:14:00 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 01:14:00 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 01:14:00 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 01:29:00 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 01:29:00 fetcher INFO  Fetched front page via API (99225 bytes, 277.2 ms)
+2026-05-25 01:29:00 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 01:29:00 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 01:29:00 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 01:29:00 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 01:44:00 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 01:44:01 fetcher INFO  Fetched front page via API (99225 bytes, 256.0 ms)
+2026-05-25 01:44:01 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 01:44:01 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 01:44:01 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 01:44:01 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 01:59:01 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 01:59:01 fetcher INFO  Fetched front page via API (99225 bytes, 294.4 ms)
+2026-05-25 01:59:01 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 01:59:01 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 01:59:01 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 01:59:01 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 11:30:31 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 11:30:32 fetcher INFO  Loaded 3 cookies for umd.instructure.com from Comet
+2026-05-25 11:30:32 fetcher INFO  Fetched front page via API (99225 bytes, 518.2 ms)
+2026-05-25 11:30:32 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 11:30:32 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 11:30:32 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 11:30:32 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 13:28:05 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 13:28:05 fetcher INFO  Fetched front page via API (99225 bytes, 339.6 ms)
+2026-05-25 13:28:05 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 13:28:05 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 13:28:05 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 13:28:05 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 13:43:05 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 13:43:06 fetcher INFO  Fetched front page via API (99225 bytes, 260.2 ms)
+2026-05-25 13:43:06 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 13:43:06 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 13:43:06 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 13:43:06 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 13:58:06 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 13:58:06 fetcher INFO  Fetched front page via API (99225 bytes, 269.8 ms)
+2026-05-25 13:58:06 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 13:58:06 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 13:58:06 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 13:58:06 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 14:13:06 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 14:13:07 fetcher INFO  Fetched front page via API (99225 bytes, 578.5 ms)
+2026-05-25 14:13:07 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 14:13:07 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 14:13:07 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 14:13:07 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 14:37:29 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 14:37:30 fetcher INFO  Fetched front page via API (99225 bytes, 592.8 ms)
+2026-05-25 14:37:30 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 14:37:30 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 14:37:30 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 14:37:30 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 14:52:33 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 14:52:33 fetcher INFO  Fetched front page via API (99225 bytes, 262.4 ms)
+2026-05-25 14:52:33 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 14:52:33 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 14:52:33 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 14:52:33 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 15:07:33 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 15:07:33 fetcher INFO  Fetched front page via API (99225 bytes, 324.6 ms)
+2026-05-25 15:07:33 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 15:07:33 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 15:07:33 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 15:07:33 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 15:22:33 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 15:22:34 fetcher INFO  Fetched front page via API (99225 bytes, 295.8 ms)
+2026-05-25 15:22:34 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 15:22:34 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 15:22:34 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 15:22:34 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 16:02:56 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 16:02:57 fetcher INFO  Fetched front page via API (99225 bytes, 416.0 ms)
+2026-05-25 16:02:57 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 16:02:57 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 16:02:57 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 16:02:57 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 16:33:57 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 16:33:57 fetcher INFO  Fetched front page via API (99225 bytes, 260.7 ms)
+2026-05-25 16:33:57 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 16:33:57 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 16:33:57 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 16:33:57 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 16:53:31 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 16:53:31 fetcher INFO  Fetched front page via API (99225 bytes, 388.3 ms)
+2026-05-25 16:53:31 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 16:53:31 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 16:53:31 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 16:53:31 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 17:12:08 fetcher INFO  Fetching front page from API: https://umd.instructure.com/api/v1/courses/1398395/front_page
+2026-05-25 17:12:08 fetcher INFO  Fetched front page via API (99225 bytes, 284.6 ms)
+2026-05-25 17:12:08 parser INFO  Parsed 41 News Feed entries; newest date: 'Thursday, May 21' (3 items)
+2026-05-25 17:12:08 state_store INFO  Loaded state: last_change_type=NEW_DATE, latest_date='Thursday, May 21', checked_at=2026-05-21T22:27:20.680520-04:00
+2026-05-25 17:12:08 canvas_monitor INFO  Check result: {
+  "change_type": "NO_CHANGE",
+  "newest_date": "Thursday, May 21",
+  "newest_items_count": 3,
+  "total_entries_parsed": 41
+}
+2026-05-25 17:12:08 canvas_monitor INFO  Sleeping 900 seconds until next check...
+2026-05-25 17:17:38 canvas_monitor INFO  Received signal 15, shutting down after current cycle...
+2026-05-25 17:17:39 canvas_monitor INFO  Poll loop stopped.
